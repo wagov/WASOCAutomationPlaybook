@@ -1,0 +1,2 @@
+# WASOCAutomationPlaybook
+For testing playbooks
