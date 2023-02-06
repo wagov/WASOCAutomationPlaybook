@@ -58,9 +58,9 @@
                     "actionConfiguration": {
                       "title": "Confirm the port scan activity",
                       "description": "<ol><li>Check the Destination IP and device the port scan is performed on</li><li>Something Something</li><li>Confirm with IT department to confirm if any penetration testing activity is being carried out.</li></ol>"
-                        }
-                      }
-                    }
+                       }
+                   }
+                  
                 ]
             }
         }
