@@ -1,1 +1,1 @@
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://github.com/wagov/WASOCAutomationPlaybook/blob/main/AnonymousIP/PB-TEST-CV.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/wagov/WASOCAutomationPlaybook/main/AnonymousIP/PB-TEST-CV.json)
