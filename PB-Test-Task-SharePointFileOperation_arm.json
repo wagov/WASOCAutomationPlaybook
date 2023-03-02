@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        },
+        "automationRuleName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the automation rule that will be deployed"
+            }
+        },
+        "existingRuleId": {
+            "type": "string",
+            "metadata": {
+                "description": "The analytics rule GUID that is used in the triggering conditions. Feel free to remove the condition below if you don't need it."
+            }
+        }
+    },
+    "variables": {
+        "automationRuleGuid": "[uniqueString(parameters('automationRuleName'))]" 
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[parameters('automationRuleName')]",
+                "order": 6,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',parameters('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                   
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Check over user linked to device",
+              "description": null
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Verify with user if activity is authentic",
+              "description": "<ul><li>If activity not authentic change user password.</li></ul>"
+            }
+          }
+
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
