@@ -1,2 +1,2 @@
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2Fmain%2FTaskAutomations%2FDGov-TaskAutomation-CorrelateUnfamiliarAndAtypicalSignIn.json)
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json!
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json)
