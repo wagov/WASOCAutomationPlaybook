@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Successful logon from IP and failure from a different IP",
+        "automationRuleGuid": "ee6194f3-34cd-490a-8c17-cf57c8e9689c",
+        "existingRuleId": "3d411de5-bba0-4c82-8d5d-992fb947539d"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review the alert and extract IPs",
+                          "description": "<div>Assign the incident to yourself and then open the alert in the \"Logs\" section by clicking the following Icon:</div><div><br></div><div><img src=\"data:image/png;base64,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\"></div><div><br></div><div>Then extract the username and IP in the Entities section.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Query and review the account's sign in ativity",
+                          "description": "<div>Using the information from before use KQL to view the users sign in activity.</div><div><br></div><div>You can use the following template.</div><div><br></div><div><br></div><pre  spellcheck=\"false\">SigninLogs&nbsp;\n| where TimeGenerated &gt; ago(1d) // Change lookback time as required&nbsp;&nbsp;\n| where UserPrincipalName in (\"[UPN]\") // For use when filtering by users (comma seperated list)\n| where ResultType !in (\"50126\", \"50053\", \"530031\") // Remove login attempts with incorrect credentials or auto blocked IPs\n| extend AuthStep_1 = tostring(parse_json(AuthenticationDetails)[0].authenticationMethod) // Used to discover password authentication attempts\n| extend AuthSuccess_1 = tostring(parse_json(AuthenticationDetails)[0].succeeded) // Used to determine if password authentication succeeded\n| where (AuthStep_1&nbsp; in (\"Password\") and AuthSuccess_1 in (\"true\")) or ResultType in (\"0\", \"53003\", \"50076\") // Only show logins that succeeded or had correct credentials&nbsp;\n| summarize count() by TimeGenerated, UserPrincipalName, IPAddress, Location, ResultType, ResultDescription\n| sort by TimeGenerated desc\n</pre>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate using the results from the query.",
+                          "description": "<div>Using the results look at the following:</div><div><br></div><div><br></div><div><br></div><ul><li><strong>Why did it fail. </strong>If the attempt failed due to to Conditional Access or MFA it would imply that the password was correct meaning that if the sign in was malicious then the user's password was compromised.</li><li>If it did fail on CA, was there any successful attempts from new IPs. A potential attacker could be using a VPN to bypass CA.</li><li>Did the UserAgent change from a mobile phone to a desktop and vice versa. This would indicate that the user is transitioning between devices that are on different networks.</li><li>The time between the sign ins. If the failure occurred soon after the success it would be more suspicious than if it occurred later when the user had time to go home or leave the network that they were on.</li><li>Does the IP that failed have reports of abuse.</li><li>Is the sign in from out of country.</li></ul>"
+                        }
+                      },
+                      {
+                        "order": 4,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate if necessary and close the ticket.",
+                          "description": "<div>Should you determine that the user's account was compromised then:</div><div><br></div><div><br></div><div><br></div><ul><li>Reset the user's password</li><li>Revoke all sessions.</li><li>Review account activity across all relevant services after the breach. (Check what applications they signed in to)</li></ul><div><br></div><div>When you are done change the status of the ticket as closed and leave a comment regarding your findings.</div>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
