@@ -1,1 +1,1 @@
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/ENCODED-URL)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/wagov/WASOCAutomationPlaybook/main/TaskAutomations/AddTasks-(Preview)TIMapDomainEntityToDnsEvents(ASIMDNSSchema)/AddTasks-(Preview)TIMapDomainEntityToDnsEvents(ASIMDNSSchema).jsonL)
