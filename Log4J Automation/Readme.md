@@ -1,1 +1,0 @@
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/DininduWickramatungaDPC/WASOCAutomationPlaybook/main/Log4J%20Automation/AddTasks-Log4j%20vulnerability%20exploit%20aka%20Log4Shell%20IP%20IOC.json)
