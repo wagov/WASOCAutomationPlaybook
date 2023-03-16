@@ -1,1 +1,1 @@
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/ENCODED-URL) 
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2Fmain%2FTaskAutomations%2FAddTasks-%28Preview%29TIMapIPEntityToNetworkSessionEvents%28ASIMNetworkSessionSchema%29%2FAddTasks-%28Preview%29TIMapIPEntityToNetworkSessionEvents%28ASIMNetworkSessionSchema%29.json) 
