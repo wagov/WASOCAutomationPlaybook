@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - (Preview) TI map IP entity to DNS Events (ASIM DNS schema)",
+        "automationRuleGuid": "6518525a-4f4b-44c4-a560-81cc93d7f0f8",
+        "existingRuleId": "8eee3d7e-24d5-46f7-aace-5931f3193220"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Confirm whether TI mapping is a true positive",
+                        "description": "<div><strong>Double check the mapped TI IP via enrichment</strong></div><div><br></div><div>Confirm whether the domain is malicious with tools such as:</div><ul><li><a href=\"https://www.abuseipdb.com/\" rel=\"noopener noreferrer\" target=\"_blank\">IP Abuse DB</a></li><li><a href=\"https://www.ip2location.com/demo\" rel=\"noopener noreferrer\" target=\"_blank\">IP2Location</a></li><li><a href=\"https://ipinfo.io/\" rel=\"noopener noreferrer\" target=\"_blank\">IP Info</a></li><li><a href=\"https://www.virustotal.com/gui/home/search\" rel=\"noopener noreferrer\" target=\"_blank\">VirusTotal</a></li></ul><div><br></div><div>If IP appears potentially malicious continue on, otherwise note as False Positive.</div>"
+                        }
+                    },
+                    {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Check on records involving IP Address",
+                        "description": "<div>To scope the recorded interactions involved with the IP address you can use the \"search\" command in KQL:</div><pre  spellcheck=\"false\">search \"&lt;INSERT IP&gt;\"\n| summarize count() by $table\n</pre><div><br></div><div>e.g.</div><pre class=\"ql-syntax\" spellcheck=\"false\">search \"1.1.1.1\"\n| summarize count() by $table\n</pre><div><br></div><div>The results will display which tables have recorded instances of the string entered.</div>"
+                        }
+                    },
+                    {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Check on actions involving IP Address",
+                        "description": "<div><strong>Using the above tables drill down into each of the log tables to view related events for malicious activity</strong></div><div><br></div><div>For example, if the above results listed a series of events in the DnsEvents table, you can check what the DNS A requests were resolving to, or the DeviceNetworkEvents can be checked to determine what processes, command line arguments, and devices are involved. CommonSecurityLog can also be a good point to check traffic flows and whether security tools have allowed or denied traffic to the IP address. </div><div><br></div><div>The search command can be used again to gain the full scope of relevance and then exclusions can be made where necessary.</div><div><br></div><div>e.g.</div><pre  spellcheck=\"false\">DeviceNetworkEvents\n|search \"1.1.1.1\"\n</pre><div><br></div><div>Further, due to the ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM DNS Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
+                        }
+                    },
+                    {
+                        "order": 4,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Determine need for containment and remediation",
+                        "description": "<div>If malicious activity has occurred and was not stopped by any form of firewall, XDR, or security tooling, follow standard operating procedures for containment and remediation.</div><div><br></div><div>These would commonly involve:</div><ul><li>Isolate and scan affected devices</li><li>Reimage/restore affect devices</li><li>Reset affected credentials</li><li>Revoke active sessions</li><li>Other actions as required</li></ul>"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
