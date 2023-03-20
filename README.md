@@ -1,7 +1,7 @@
 # WASOCAutomationPlaybook
 For testing playbooks
 
-Quick tets of deploy button
+Quick test of deploy button
 
 
 | **Rule No.** | **Rule Name** | **Rule Description** | **Deploy Rule** |
