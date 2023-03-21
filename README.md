@@ -11,7 +11,7 @@ Quick test of deploy button
 | 3            |               |                      |                 |
 | 4            |               |                      |                 |
 | 80           |AddTasks - Rare RDP Connections|                      |[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2Fmain%2FTaskAutomations%2FAddTasks-RareRDPConnections%2FAddTasks%2520-%2520Rare%2520RDP%2520Connections.json) |
-| 86           |AddTasks - Successful logon from IP and failure from a different IP||                      |[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fcarel-v98%2FWASOCAutomationPlaybook%2Fmain%2FTaskAutomations%2FAddTasks-SuccessfulLogonFromIPandFailureFromaDifferentIP%2FAddTasks-SuccessfulLogonFromIPandFailureFromaDifferentIP.json)|
+| 86           |AddTasks - Successful logon from IP and failure from a different IP||                      |[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/ENCODED-URL)|
 | 100          |AddTasks - Log4j vulnerability exploit aka Log4Shell IP IOC|                      |[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2Fmain%2FTaskAutomations%2FAddTasks-Log4jVulnerabilityExploitAkaLog4ShellIPIOC%2FAddTasks-Log4jVulnerabilityExploitAkaLog4ShellIPIOC.json)|
 
 
