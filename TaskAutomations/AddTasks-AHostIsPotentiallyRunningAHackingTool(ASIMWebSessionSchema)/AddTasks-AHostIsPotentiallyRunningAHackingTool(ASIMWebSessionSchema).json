@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "Add Tasks - A host is potentially running a hacking tool (ASIM Web Session schema)",
+        "automationRuleGuid": "a41c4a8e-27e0-4784-9d4f-a3d3f5cea70c",
+        "existingRuleId": "9cd1632b-f8fc-4573-ab21-466317a19876"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                      {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Check your EDR for any suspiciously named processes (random characters) with unusually large amounts of device resources (CPU, GPU, etc.)",
+                          "description": null
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Search for any suspicious IoC",
+                          "description": "<div>Search device network logs for regular connections made to the IP address related to the alert. Look for any suspicious command lines and user agents involved</div>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediation (if required)",
+                          "description": "<div>If a hacking tool is present, possible actions include:</div><div><br></div><ul><li>Isolating the device from the network</li><li>Removing malicious programs/files</li><li>A full AV scan</li><li>Reimaging the device</li></ul><div><br></div>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
