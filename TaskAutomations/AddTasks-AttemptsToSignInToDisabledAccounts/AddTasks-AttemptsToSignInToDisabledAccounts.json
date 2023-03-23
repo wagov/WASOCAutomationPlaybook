@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "Add Tasks - Attempts to sign in to disabled accounts",
+        "automationRuleGuid": "e7141384-de23-411b-bc95-4cc8378cfa25",
+        "existingRuleId": "37f068ad-9155-4afe-a1fd-09a377aadf81"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Query and review each account's recent sign-in activity",
+                          "description": "<div><strong>Using the previously recorded accounts, use a KQL query to investigate the account's recent sign-in activity.</strong></div><div>An example query template (read each line to understand what it does):</div><pre  spellcheck=\"false\">SigninLogs&nbsp;//Replace with AADNonInteractiveUserSignInLogs to see automatic sign ins (Applications)\n| where TimeGenerated &gt; ago(1d) // Change lookback time as required&nbsp;&nbsp;\n| where UserPrincipalName in (\"[UPN]\") // For use when filtering by users (comma seperated list)\n//| where IPAddress in (\"[IP]\")//Pivot on IP\n| where ResultType !in (\"50126\", \"50053\", \"530031\") // Remove login attempts with incorrect credentials or auto blocked IPs\n| extend AuthStep_1 = tostring(parse_json(AuthenticationDetails)[0].authenticationMethod) // Used to discover password authentication attempts\n| extend AuthSuccess_1 = tostring(parse_json(AuthenticationDetails)[0].succeeded) // Used to determine if password authentication succeeded\n| where (AuthStep_1&nbsp; in (\"Password\") and AuthSuccess_1 in (\"true\")) or ResultType in (\"0\", \"53003\", \"50076\") // Only show logins that succeeded or had correct credentials&nbsp;\n| summarize count() by TimeGenerated, UserPrincipalName, IPAddress, Location, ResultType, ResultDescription\n| sort by TimeGenerated desc\n</pre><div>Note: Sign-ins that failed on CAP or MFA suggests first stage authentication (such as password) was successful and <em>may</em> be an indication of compromised credentials.</div>"
+                        }
+                    },
+                    {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Determine if attempts are malicious",
+                          "description": "<div>Based on the results from the previous query, determine if the attempts are from a malicious actor or from an application (like Teams or Outlook) on the device that the user of the disabled account was signed in on. If the attempts are malicious, pivot on the IP to determine if there are any successful sign ins from said IP.</div>"
+                        }
+                    },
+                    {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate (if necessary)",
+                          "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><div><strong><span class=\"ql-cursor\">﻿</span></strong></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review account activity across relevant services after the breach occurred.</li></ul><div><br></div>"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
