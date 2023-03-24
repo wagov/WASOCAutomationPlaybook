@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - DNS events related to mining pools (ASIM DNS Schema)",
+        "automationRuleGuid": "9f2e2639-2eb3-4c08-9f4e-3193534267a1",
+        "existingRuleId": "c9e64171-af63-4e20-b9c2-62914776a89c"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions":[
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract relevant values from incident entities",
+                        "description": "<div>Values such as the source host of the DNS request, the domain requested and the returned IP address.</div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Identify host, application and account responsible for query",
+                        "description": "<div>Doing a query such as</div><pre  spellcheck=\"false\">search \"[suspicious domain]\"\n| where TimeGenerated &gt; ago(1d) // adjust time as needed\n| summarize count() by $table\n</pre><div>Will return a list of tables that contain the suspicious domain to further search into to help identify the host, application and account responsible.</div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<ul><li>Was the request made by a service such as a firewall doing a DNS lookup to update block tables?</li><li>Does the host/application/account have a legitimate reason for making the query?</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 4,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Isolate device</li><li>Stop and quarantine the responsible file/applications</li></ul>"
+                      }
+                    }
+                  ]
+            }
+        }
+    ],
+    "outputs": {}
+}
