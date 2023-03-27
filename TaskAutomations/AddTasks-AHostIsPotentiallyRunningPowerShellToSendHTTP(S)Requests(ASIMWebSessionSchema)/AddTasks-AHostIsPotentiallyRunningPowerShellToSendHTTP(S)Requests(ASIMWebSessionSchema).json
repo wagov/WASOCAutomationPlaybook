@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - A host is potentially running PowerShell to send HTTP(S) requests (ASIM Web Session schema)",
+        "automationRuleGuid": "c8f32450-176e-490b-ba4f-9a91536c7fc5",
+        "existingRuleId": "ff905e7e-ad2a-4567-a7ac-38228bb595e7"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate the Powershell Command to determine if suspicious",
+                          "description": "<div>Investigate the device logs to look at the command line for this particular incident. This could involve decoding the command from base64. Determine if this is expected/approved for your environment.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate IP that the command is connecting to",
+                          "description": "<div>Determine if the connection is made to an IP that is cause for concern (reports of abuse, out of country, etc.)</div>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate (if necassary)",
+                          "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><div><br></div><ul><li>Run antivirus scan</li><li>Isolate device</li><li>Stop and quarantine the responsible file</li></ul><div><br></div>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
