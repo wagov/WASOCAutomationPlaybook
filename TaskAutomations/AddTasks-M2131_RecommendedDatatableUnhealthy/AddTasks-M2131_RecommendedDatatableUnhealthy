@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - M2131_RecommendedDatatableUnhealthy",
+        "automationRuleGuid": "fa308ec2-3cd1-4839-8cd0-e351820c0ae9",
+        "existingRuleId": "1b522e9d-ab3e-4cbe-9e2b-975d826b4bd2"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Assess Data Table",
+                        "description": "<div>Check whether the listed unhealthy data tables are meant to be seen in current Sentinel environment.</div><ul><li>If the data table(s) are not currently being ingested by design, this rule may become noisy.</li></ul><div> </div><div><br></div><div><br></div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Assess Connectors",
+                        "description": "<div>Check on Data Connector status for the relevant Data Table.</div><ul><li>A list can be found here: <a href=\"https://learn.microsoft.com/en-gb/azure/sentinel/data-connectors-reference#microsoft\" rel=\"noopener noreferrer\" target=\"_blank\">Find your Microsoft Sentinel data connector | Microsoft Learn</a></li></ul><div><br></div><div>If not already configured, Data Connector Health can be monitored, se the following links:</div><ul><li><a href=\"https://learn.microsoft.com/en-us/azure/sentinel/enable-monitoring\" rel=\"noopener noreferrer\" target=\"_blank\">Turn on auditing and health monitoring in Microsoft Sentinel | Microsoft Learn</a></li><li><a href=\"https://learn.microsoft.com/en-us/azure/sentinel/monitor-data-connector-health\" rel=\"noopener noreferrer\" target=\"_blank\">Monitor the health of your Microsoft Sentinel data connectors | Microsoft Learn</a></li></ul>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Assess Context",
+                        "description": "<div>If Data Connectors are meant to be connected but weren't, check the timeframe they were down and any Azure Activity logs at that time. These can be found by going to:</div><ul><li>Sentinel &gt; Settings &gt; Workspace Settings &gt; Activity Log</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 4,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Escalate Issue",
+                        "description": "<div>If the activity looks to be unknown/unplanned/suspicious, escalate issue as per standard operating procedures.</div>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

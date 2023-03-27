@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - M2131_DataConnectorAddedChangedRemoved",
+        "automationRuleGuid": "8ab50014-a30b-468a-8a7d-5f8ccfbfdfc0",
+        "existingRuleId": "ad0bd28b-7d25-45ab-bdbb-45d797af1869"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Assess Context",
+                        "description": "<div>To check on the events surrounding this incident's timeline the <strong>Azure Activity logs</strong> can be used. These can be found by going to:</div><ul><li>Sentinel &gt; Settings &gt; Workspace Settings &gt; Activity Log</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Escalate Issue",
+                        "description": "<div>If the activity looks to be unknown/unplanned/suspicious, escalate issue as per standard operating procedures.</div>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
