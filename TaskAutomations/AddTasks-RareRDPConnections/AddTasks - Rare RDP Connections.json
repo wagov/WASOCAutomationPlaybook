@@ -55,7 +55,7 @@
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
                           "title": "Check the IP address of the source ",
-                          "description": "<ul><li>Use IP database to verify the IP address or to determine if it is malicious.&nbsp;</li></ul><div>&nbsp;</div><pre  spellcheck=\"false\">SecurityEvent&nbsp;\n|where TimeGenerated between ((todatetime('2022-11-14T23:25:10.3951708Z')-5m)..(todatetime('2022-11-28T23:25:10.3951708Z')+5m))&nbsp;\n|where * has \"&lt;account name&gt;\" and * has \"&lt;host name&gt;\" and * has \"&lt;IP address&gt;\"&nbsp;\n|summarize count(), make_set(IpAddress) by Computer, TargetUserName, TargetServerName, Process, Activity&nbsp;\n</pre><div><br></div>"
+                          "description": "<ul><li>Use IP database to verify the IP address or to determine if it is malicious.&nbsp;</li></ul><div><br></div><div><br></div><div><br></div><pre  spellcheck=\"false\">SecurityEvent&nbsp;\n|where TimeGenerated between ((todatetime('2022-11-14T23:25:10.3951708Z')-5m)..(todatetime('2022-11-28T23:25:10.3951708Z')+5m))&nbsp;\n|where * has \"&lt;accountName&gt;\" and * has \"&lt;hostName&gt;\" and * has \"&lt;IP address&gt;\"&nbsp;\n|summarize count(), make_set(IpAddress) by Computer, TargetUserName, TargetServerName, Process, Activity&nbsp;\n</pre>"
                         }
                       },
                       {
@@ -63,7 +63,7 @@
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
                           "title": "Check the source and activity ",
-                          "description": "<ul><li>If the IP address is local and account name is known or identifiable, verify with the account user of the activity.&nbsp;</li><li>If the activity is a successful logon event and source is unknown, escalate the incident for further investigation.&nbsp;</li></ul><div><br></div>"
+                          "description": "<ul><li>If the IP address is local and account name is known or identifiable, verify with the account user of the activity.&nbsp;</li><li>If the activity is a successful logon event and source is unknown, escalate the incident for further investigation.&nbsp;</li></ul><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><ul><li>Following KQL can be used to identify the user's details.</li></ul><pre  spellcheck=\"false\">IdentityInfo\n|where * has \"&lt;accountName&gt;\"\n</pre>"
                         }
                       }
                 ]
