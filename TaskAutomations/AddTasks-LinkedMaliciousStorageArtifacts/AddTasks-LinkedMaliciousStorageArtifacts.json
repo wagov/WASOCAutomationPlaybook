@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Linked Malicious Storage Artifacts",
+        "automationRuleGuid": "1a0b61f2-e228-471a-8a59-5e7dc93e2ae0",
+        "existingRuleId": "c52383b7-2938-48af-94db-f782d2f1c7e4"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                     {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Determine if the IP is malicious",
+                          "description": "<div>Ensure that the IP could not be from someone on the security team that may have uploaded the malicious file for analysing. If not then use an IP analyser to see if the IP has reports of abuse and its location.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate (if necessary)",
+                          "description": "<div>Remediation could include:</div><ul><li>Quarantine/Remove the files</li><li>Block the ip</li><li>If they are using a legitimate account then disable the account</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
