@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Azure Portal Signin from another Azure Tenant",
+        "automationRuleGuid": "81a40df4-80ca-4504-8f9e-de9f27c75ac4",
+        "existingRuleId": "a9cf5faa-96c4-4116-9956-b82b22ba8f49"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Review the incident and extract relevant entities",
+                        "description": "<div>Values such as the <strong>UserPrincipalName</strong>, <strong>IPAddress</strong>,<strong> HomeTenantId</strong>, <strong>ResourceTenantId</strong> will likely be required to accurately resolve the incident.</div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<div><strong>Determine if sign-ins from the HomeTenantId are expected and approved.</strong></div><ul><li>If sign-ins from that HomeTenantId are expected and approved, is this normal behaviour for the user that generated the alert?</li><li>Did the user do anything suspicious while logged in that requires further investigation?</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><ul><li>Review account activity across relevant services after the breach occurred.</li><li>Review access policies to allow/block access from other tenants</li></ul>"
+                      }
+                    }
+                  ]
+            }
+        }
+    ],
+    "outputs": {}
+}
