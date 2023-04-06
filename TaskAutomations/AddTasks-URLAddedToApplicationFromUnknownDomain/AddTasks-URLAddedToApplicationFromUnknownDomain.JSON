@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - URL Added to Application from Unknown Domain",
+        "automationRuleGuid": "46a0c7a8-91a9-400e-a5c1-b6bc93d485a1",
+        "existingRuleId": "e2a2ddc0-babc-453e-b4b7-4217dfbaaa3c"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review Alert Details",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmCAYAAACoPemuAAAFjElEQVRYhc2YW2xURRjHf3POnt09bXfbbYF2F1tFsdoUUrSmEHkoaqIhUWlM1Grw8qTxwWjU+GC8EmOCxvjgJTwYr4kxRE1QUaOIEFAgqUoEsSgVqKHaC9vL3s5tzviwBam72y5YC/9ks5nJZL7f+c83c745QjkTiuR+EJxTCpD8ETZ2QvBso0xVAKHnoc45sGLy55gCQJvaLAQTGoSq5ohmUkqCl5nSNRVMApEE3LAHtH+trZj8qROTzSLY8G744gbQObkJizimQ0ViFqOWofCCgq4iOabAd05xTLH3T4vXdo3x6zEbw9Toaq3ipqUR4lXG7ID5TjlggIDjOZ/Nv0xwaMTjo30ZGkJhYsEorqt4e3eOz3tzXNtcQUNU45al1WXFT6VSRCKRssZqRXuFYPthm+e+nGDnQUX7vBoao2FaGgxaG4K01lZhSpN3dlk89tlx/hgvfOITklLS09NDV1cXGzZsKAuqNBiQc30ujIVpjBpIpUg7ktuuCLOq2WDC9jENjUvqTOorDcYsWTLAunXrWLVqFZs2baK/v/+/g2kCsq5kwvbIuh4ZVxI0QAjIuB5px2PccXGkj1bifeb7Pi0tLaxfv57Kyko0rWS4AhXPMfKnQc6ThDQNBNiuwlfgKUXGlaAJHAkICAVKZYSgu7sbyDvn++Wf3CXBbE8xarkYmoYQ+fa45TOak2SlRHiClO0jgj4XxIrvTiHyTuZyudOCmhZsRVMYT/ikHElAA1/Bq9+OkbIVUvnkPEHSdmmOaQS02S9Niq+BUrTMC9C1pJK+UYuczAMuiQdJRDVSjmTU8sh6Hvctj8061DRg+b8HV9ZRXyP4Y8LG9iXb+jJ8P5Aj5UqSlsvDnTHWtJZ3LlmWheu6/xFsUk01Bu91L6Q+KhhIOew4kuHnQZu06/JQZw2Pdtahi5mXUQjB4sWLqa+vLxusZI6d0PJGkw/WNvLC9hHe+34MFDx53QIev3p+2UHC4TB79uyZnePiVC2Lh3nr5oV0NJokogY3lbl8pyoYPL1KtCwwAEMXPLCy7rSBzlTlezvHOi0wBWQcH9efzSqxuKYFO56VvLhjhIGUB4DlKZ7dOsyu/uyME2ddn7Rz5peHacF2HsnwyMZjfLhvAgClFL8nHcZz/wR0ZKF7jlS82TPGuz+M40266/qq6NhSKlkoKmBzb5pbVtSy/UiG+1bECAiBoQvChmA0J3lqyzCHR23uvjxGV2uUl3aM8Ffaw9A0Nh9MYXk+F8QCzK8K8Mp3STxf8fzqBhLRmfdcyUKxd0RydMzl5TVxHE/xTV+GYECgCYEr4Zmvh1AK1rbV8EbPKPsHLV7vGWMo7dHVGqE9EWbl+ZUsS5g8vWWYppjBPR0xKozy3qslllLw8YE0B4ZsXt2dZO+fFp/0pgDQNcg6PjuP5Dg6YvPlb2mGM5KjSZeL64Lcf2UdyxtNFtUGaa0PEY8EWN1cxba+DL8MOUTCellghZ5qkHUkWw6luX1ZNZfOD3FvR4xPe/OghibQdWhZEKI9EeKu9hgjWYmhCYSA0KQjtlRIO5+Ld1xew1UXVXLnxmNUhzW622a+IxSCBTV29GWwpOLpa+ZjGnlTf/rLZmtfBkMXVId0bmur5omvBtk3YNFcH6a7rZqgLk4WAB3nmTzx1RCLag0Gxj36By1qTI2mmvJuVoVgjqKjyeT9W6MnoQBeWxNH+goFREMapqERjwRIZjyaF4RIRAK8fGOcWjO/VNe3RDivOkBVSCeoCw4Ohlg0L8gl80JnCOZDrNLk31VWXUVhblyWCE9pxyP/TKcLaF9onmwvKlHlAoW3/qJgSkJ2oOjg/03WUEHXVDAdyA3ARy1zRDQpJQssKuKYD/bEHBGdohk/QxUZdDYUQEkofcM/axLn6sfhvwGl5SRe9N2vGQAAAABJRU5ErkJggg==\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate",
+                          "description": "<ul><li>Identify the accounts observed in the incident.</li><li>Check the sign-in logs for the accounts to confirm that there are no suspicious sign-ins.</li><li>Check if the url's and corresponding domains belong to the organisation. <em>(Note: Application services utilised by the organisation may use different domains)</em></li></ul><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><ul><li>Use the following KQL to investigate the incident.</li></ul><pre  spellcheck=\"false\">SecurityAlert\n| summarize arg_max(TimeGenerated, *) by SystemAlertId&nbsp;\n| where SystemAlertId in(\"&lt;alertID&gt;\")&nbsp;\n|project Entities\n|extend Entities = iff(isempty(Entities), todynamic('[{\"dummy\":\"\"}]'),todynamic(Entities))\n|mv-expand Entities\n|evaluate bag_unpack(Entities)\n</pre>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Closing or Escalating the Incident",
+                          "description": "<ul><li>If the accounts are known (e.g. admin accounts or routine activity) and domains belong to the organisation, then the incident can be closed.</li><li>If the domain(s) identified are not associated with the organisation or the accounts associated have suspicious sign-ins, then the incident should be escalated.</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
