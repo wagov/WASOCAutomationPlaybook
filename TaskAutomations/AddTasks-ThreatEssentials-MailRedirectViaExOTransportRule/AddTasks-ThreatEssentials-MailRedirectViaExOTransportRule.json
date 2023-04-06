@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Threat Essentials - Mail redirect via ExO transport rule",
+        "automationRuleGuid": "0154ffdc-91da-4700-ba6e-f0c4acd5d7f3",
+        "existingRuleId": "a28d75af-1cee-4542-9957-53d547aa925e"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Determine if the rule is legitimate",
+                        "description": "<ul><li>Have there been any recent phishing alerts or incidents for the same AccountCustomEntity?</li><li>Is the rule named something suspicious such as a single letter (e.g. \"z\") or a single character (e.g. \".\")</li><li>User contact via manager can help to check on legitimacy (however, contacting user via email should be avoided)</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if necessary)",
+                        "description": "<div>Remediation could include:</div><ul><li>Removal of the rule</li><li>Removal of the mailbox (if created in your environment)</li><li>Further investigation into the existence of the rule (if created by an account in your environment then disable the account)</li></ul><div><br></div>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
