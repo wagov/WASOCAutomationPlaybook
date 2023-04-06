@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Port scan detected (ASIM Network Session schema)",
+        "automationRuleGuid": "bdc2396a-9be5-4f84-8c0a-1c7fe5ea2c93",
+        "existingRuleId": "b8fe75a9-aa06-46b6-965f-a02926cf7860"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm whether IP appears malicious",
+                        "description": "<div><strong>Double check the IP via enrichment</strong></div><div><br></div><div>Confirm whether the IP appears malicious with tools such as:</div><ul><li><a href=\"https://www.abuseipdb.com/\" rel=\"noopener noreferrer\" target=\"_blank\">Abuse IP DB</a></li><li><a href=\"https://www.ip2location.com/demo\" rel=\"noopener noreferrer\" target=\"_blank\">IP2Location</a></li><li><a href=\"https://ipinfo.io/\" rel=\"noopener noreferrer\" target=\"_blank\">IP Info</a></li><li><a href=\"https://www.virustotal.com/gui/home/search\" rel=\"noopener noreferrer\" target=\"_blank\">VirusTotal</a></li></ul>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Check on ports",
+                        "description": "<div>Using the Incident events, check whether the scan seems to be targeting specific ports or is a sequential scan. This could indicate precursor activity to further attacks and is good to note for further remediation activity.</div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Check on network activity",
+                        "description": "<div><strong>Scope interactions</strong></div><div><br></div><div>To scope the recorded interactions involved with the IP address you can use the \"search\" command in KQL:</div><div><br></div><pre  spellcheck=\"false\">search \"&lt;INSERT IP&gt;\"\n| summarize count() by $table\n</pre><div><br></div><div><strong>Using the IP(s) or domain(s) drill down into each of the log tables to view related events for malicious activity</strong></div><div><br></div><div>For example, if the above results listed a series of events in the DeviceNetworkEvents can be checked to determine what processes, command line arguments, and devices are involved. CommonSecurityLog can also be a good point to check traffic flows and whether security tools have allowed or denied traffic to the IP address.</div><div><br></div><div>The search command can be used again to gain the full scope of relevance and then exclusions can be made where necessary.</div><div><br></div><div>e.g.</div><pre class=\"ql-syntax\" spellcheck=\"false\">DeviceNetworkEvents\n|search \"1.1.1.1\"\n</pre><div><br></div><div>Further, due to the ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM Network Session Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
+                      }
+                    },
+                    {
+                      "order": 4,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediation (if required)",
+                        "description": "<div>If activity appears malicious follow standard operation procedures for remediation, which may include steps such as:</div><ul><li>Blocking IP(s)/Domain(s) in NGFW/WAF or security suits such as Defender (or implementing WAF in front of internet facing systems).</li><li>Assessing whether ports can be closed on perimeter security devices.</li><li>Escalate further as required.</li></ul>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
