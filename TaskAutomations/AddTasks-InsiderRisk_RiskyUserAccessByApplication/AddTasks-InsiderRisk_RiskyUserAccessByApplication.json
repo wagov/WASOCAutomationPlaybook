@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Insider Risk_Risky User Access By Application",
+        "automationRuleGuid":  "82e3b4b7-71d8-4a70-b75d-b63931e12d73",
+        "existingRuleId": "b0b156e1-14a4-464c-9b0c-51529edff3de"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review Alert Details",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate",
+                          "description": "<ul><li>Observe the percentage value by basket operator.</li><li>Check the percentage values by the User Name(s), Application Name(s), and IP address(s).</li><li>Use the following KQL as a template for investigation</li></ul><pre  spellcheck=\"false\">set query_now = datetime(yyyy-mm-ddT00:00:00.000Z);\nSigninLogs\n| where RiskState == \"atRisk\"\n| project UserPrincipalName, Location, AppDisplayName, RiskState, IPAddress\n| evaluate basket(0.01)\n| where UserPrincipalName &lt;&gt; \"\"\n| where AppDisplayName &lt;&gt; \"\"\n| project Percent, UserPrincipalName, Location, AppDisplayName, RiskState, IPAddress\n</pre>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Closing or Escalation",
+                          "description": "<ul><li>If the IP address(s) are malicious or the use applications are unusual, then escalate the incident for further investigation.</li><li>If the percentage of the activity is high and the sign-in activity is non malicious or expected (regular activity), then an  adjustment to basket threshold will be required.</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
