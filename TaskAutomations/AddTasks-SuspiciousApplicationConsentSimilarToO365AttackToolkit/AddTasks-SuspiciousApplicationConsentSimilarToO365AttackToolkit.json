@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Suspicious application consent similar to O365 Attack Toolkit",
+        "automationRuleGuid":  "24ac9d51-f702-454e-874c-3f635dfd58bb",
+        "existingRuleId": "a88cd032-3e7d-4797-9d73-534e61da8d1a"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review alert details",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div><div><br></div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate",
+                          "description": "<ul><li>Check the AuditLogs table to identify the changes made.</li><li>Analyse the application(s) and the activity to determine if they are malicious.</li><li>Use the following KQL as a template to investigate.</li></ul><pre  spellcheck=\"false\">AuditLogs\n|where TimeGenerated between ((todatetime('yyyy-mm-ddT00:00:00.000Z')-5m)..(todatetime('yyyy-mm-ddT00:00:00.000Z')+5m))\n|where * has \"&lt;accountName&gt;\" and * has \"&lt;IPAddress&gt;\"\n|extend InitiatedByUser = tostring(InitiatedBy.user.userPrincipalName), CreatedByIPAddress = tostring(InitiatedBy.user.ipAddress)\n|extend UserPrincipalName = tostring(TargetResources[1].userPrincipalName)\n|extend TargetResourceName = tostring(TargetResources[0].displayName)\n|extend Changes = todynamic(TargetResources[0].modifiedProperties)\n|parse Changes with * \"DisplayName: \" displayName \", newValue: \" newValue \", oldValue: \" oldValue \"]\" *\n|mv-expand Changes\n|summarize count(), make_set(CreatedByIPAddress) by InitiatedByUser, OperationName, TargetResourceName, Category, Result, AADOperationType, tostring(Changes)\n</pre><div><br></div>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Close or Escalate",
+                          "description": "<ul><li>If the application(s) or the activity appears suspicious, or is found to be malicious, then escalate for further investigation.</li><li>If the application(s) identified have not been seen before, then escalate to confirm if they are legitimate.</li></ul><div><br></div>"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
