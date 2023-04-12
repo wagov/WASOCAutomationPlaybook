@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Dev-0228 File Path Hashes November 2021 (ASIM Version)",
+        "automationRuleGuid": "dd207de9-289b-46d5-939a-2395eac7381d",
+        "existingRuleId": "52449fda-5e70-460b-94c0-c3a812b22cd6"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate (if necessary)",
+                          "description": "<div>A match on hashes most likely indicates a TP. Remediation could include:</div><div><br></div><div><br></div><ul><li>Isolating the device</li><li>Determining if the files are present on other machines and isolating them if they are</li><li>Determining how the file was introduced to the system</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Dev-0270 WMIC Discovery",
+        "automationRuleGuid": "6bdf9bb6-b4e7-4cb7-8614-ce696b6b1a62",
+        "existingRuleId": "3cddafa9-35a3-4837-b3bd-afe22a3d6fb3"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Determine if malicious",
+                          "description": "<div>Ensure that the processes are not a part of pen-testing activities or any other legitimate reason for it to be occurring.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate (if necessary)",
+                          "description": "<div>Remediation could include:</div><ul><li>Isolating the device</li><li>Disabling the account that is running these commands</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

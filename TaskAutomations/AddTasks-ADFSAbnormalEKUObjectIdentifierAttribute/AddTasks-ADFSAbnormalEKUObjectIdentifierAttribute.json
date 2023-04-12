@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - AD FS Abnormal EKU object identifier attribute",
+        "automationRuleGuid": "0ceeb6cc-0ae0-440b-a314-facf712cf58c",
+        "existingRuleId": "68471e35-39b9-4489-8d80-dd9409397ce8"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Determine if the OID is suspicious",
+                        "description": "<div>Look for any unique or lengthy OID's as these could be an indicator of malicious activity</div>"
+                        }
+                    },
+                    {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Determine if the malicious keys were used to authenticate into any devices",
+                        "description": "<div>Also determine which application is utilising this key.</div>"
+                        }
+                    },
+                    {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                        "title": "Remediate (if necessary)",
+                        "description": "<div>Possible remediation steps could include:</div><div><br></div><ul><li>Removing the Certificate</li><li>Isolating any devices that was signed into using the malicious certificate</li><li>Further guidance can be found here : <a href=\"https://www.microsoft.com/en-us/security/blog/2022/08/24/magicweb-nobeliums-post-compromise-trick-to-authenticate-as-anyone/\" rel=\"noopener noreferrer\" target=\"_blank\" style=\"color: var(--color-accent-fg); background-color: rgb(255, 255, 255);\">https://www.microsoft.com/en-us/security/blog/2022/08/24/magicweb-nobeliums-post-compromise-trick-to-authenticate-as-anyone/</a></li></ul>"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Exchange OAB Virtual Directory Attribute Containing Potential Webshell",
+        "automationRuleGuid": "c8a47895-683b-47c2-a344-72ea9c6acda3",
+        "existingRuleId": "80ebdfb0-1528-4886-96b8-1295fc316671"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Determine if directory changes are malicious",
+                          "description": "<div>Investigate logs to see if the Internal or External host names were changed unexpectedly</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Determine if a webshell is present",
+                          "description": "<ul><li>Look for connections made to new (never before seen IPs)</li><li>Suspicious command lines</li></ul>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate (if necessary)",
+                          "description": "<div>Remediation could include:</div><ul><li>Deploy updates to affected Exchange Servers.</li><li>Investigate for exploitation or indicators of persistence.</li><li>Remediate any identified exploitation or persistence and investigate your environment for indicators of lateral movement or further compromise.</li><li>Further information can be found here: <a href=\"https://msrc.microsoft.com/blog/2021/03/multiple-security-updates-released-for-exchange-server/\" rel=\"noopener noreferrer\" target=\"_blank\">On-Premises Exchange Server Vulnerabilities Resource Center - updated March 25, 2021 | MSRC Blog | Microsoft Security Response Center</a></li></ul><div><br></div>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

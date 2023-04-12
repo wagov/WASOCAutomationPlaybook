@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - User Accounts - Sign in Failure due to CA Spikes",
+        "automationRuleGuid": "f81a5b5c-54c9-4031-81dd-28fc432f2765",
+        "existingRuleId": "50c7012f-80c5-4f73-87ea-e06298d767e4"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review the incident entities and extract account(s)",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading</div><div><br></div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADYAAAA1CAYAAAAK0RhzAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAANqADAAQAAAABAAAANQAAAAC041R0AAAGMUlEQVRoBe1Ze2xTVRj/FYbrClvZ6B48JSgTxTEhKshLcAhi9gdzEnkoPtAoMQGDATL9AzSKwcT4B0YeahANguh0aAjTQICAOFQQNahM3YvB1q2sLVu73q7tPN+5u93t2tudWwjrln3b7bn3O995/M7v+84591xDOxP0QUngmHYZ+hy0AX0OUQegfmC9jdl+xnobY/KsqNXrp3vBSqAxo/e7ohap8aqP7opRer3pcANeO9IYtJgzbjA25qWD0ngQ3cAUQLmWZKyYMDKIod4tYcmeOtyelRAXAA18r6gRgOiYPI5VuDD3gyrkWlI4EAKlJVYGsN7thZxKaH9ropappt7tdqO0tBR5eXkwm82adjxDo+9CkwcBmz/GwoAl80vd0gTGEF2KZJoSuQ3ZZ7F7Kisqfr8fJSUlyMnJQWFhIaqrq0WLhtkJAaNSNPEH2E+gI1WeixYMwaJcY8R8PYvFyZMnkZ2djYKCAlRUVFCT1yTCwLz+ADxsRCWfn6eejpRaD7A3H+VZnU96USkvL+eAVq1aJVokql2nD0U1A9oYXRIDZ2B/Mn8GxpLcceq/5Ken9pB8YlhU8vPz4XQ6kZKSguLiYjQ0NIgWjWgnDoyBknzMESO8ugUYIGKT41Tl63mHzcjIiNjBWJXCwBo9XpgGDVS1ozAnxx4xJiNTTAw8HntqXRMG5mN+RXEkU0YgZGBnayWcrfV25HXqr7b54ZDaFJQ3PBUCtmleBt9lWIw3MTxK4LCU/a/cr4oFjkvOp5jsKbZoFIVnRdou1bo8PM6IOYo3iqsdj6bj2anJwWeuZ/mXWzx8B3LDqepoUBgYsWZr9cLhbYOXxZMUCPC0rMaDH6pag8+kt7Kdx7r703oHYzQQR58bizqXFLKObTlmw/FKV3Ada2SgVs8cChqInhRhxqiTFDME7jID18ImB1rXaDZULrvkw9rZqdcNlMGgWjt0jpIuYGpwU0YlwsXAUZzR1ez1YT1zv+vBlNVqBa2BtGeMVXQDU4PbMGcY3GyiIIBFc4ddF1CxAulaTmi671pIeSZ2yD17clpX+tI1jYkxdSXxCIr6d83A1CDj6b4fWDyxIdIXXYxV2r04Ve0Oq3frqSasPVgfpu9JhS5gi/fUYsb2Slx0hu7aK5q8OG+VYsLx0S92/HvFG1PZaIWEgRFbZy61wmwciO2n7dHq1JX3wtd1qLKHDpSuCjSMhdexbWV25GQZ8fhkM94+bsMbD2ZAa8dz4M9mvHPChhZvAEtyzVg3y8JtNxyyYvIII0rLW1h3DLC5faD3vPWH6jGJ1f3x4pEoq2nFRnYYW+NoQ+5wI/YtHaXR9ehqIcbo7GLnT3Y8f28qnpoyFFfcfhz5L/Kx2lfnr2LRpzWYNsaExyaZ8ep3DTjwVzPvxTcsfWL/JbgY4Ok3J+Hh24Zw/dTRJjxwy2C2kW7HrB2VmJiZyHYx6UhMiH2vKMTY9/+0wOnxYzljayhzxVljTdh66grm3Rp+nF1UasUKBv7N+fLu/kKjhM9/d2LRHfIhKzH2xfLRweFe8209Cu9M4XVdviozeM+oJD4oNDCxihCw935sQsIAA5bureXtVLKYOFHlhoOBJaBqqWhqQ7nNgU/OOoLq4cmdzcwfL7MUzFTdjEhJwPrZFizbV4vX2XeBd/Oz8FC2tr2qaNhtZ4thWbKiibndwb+bsfLuVIxLG8SVxNjGw43YfcaBNTOGhZSkuCAmNy/IDNErD2mm0IEgvfr8ccvCTLw0k22oWZwt3FWNCy+PR7aFHUnolG5jbDcbeSPz9e0Fw/HK3PTgtewuM4jJrkL6D3+24/RFN3/DJjeMtPYp5QjouToPt7W5/Nj7GztbTByAojnp3KShxaeY6kq7Zez9sibu7+SKanlxWhp3tz/qPSGz45Msvj4758T0bZXcnEZ75yMj+P1ANoyhtQCrp6eBZsvNR234dfU4PPPlJT6JUAGKvfvGJPGyen+EvrborZTsyYVpOUhNCne9rvU1SwEQaNMg2YFoA0DrJTHXrWh8bemWsW4r1jCIFEsapkjuAmC0WY5lLXsRvcCQiFQTfzZ9Flh0V9Tw3/jjJ7xHfZaxfmDhZMe3pp+x+OYnvHfyziNc3+s1/wOFTJjvAbfM2gAAAABJRU5ErkJggg==\"></div><div><br></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Query and review each account's recent sign-in activity",
+                          "description": "<div><strong>Using the previously recorded accounts, use a KQL query to investigate the account's recent sign-in activity.</strong></div><div><br></div><div>An example query template (read each line to understand what it does):</div><pre  spellcheck=\"false\">SigninLogs&nbsp;\n| where TimeGenerated &gt; ago(1d) // Change lookback time as required&nbsp;&nbsp;\n| where UserPrincipalName in (\"[UPN]\") // For use when filtering by users (comma seperated list)\n| where ResultType !in (\"50126\", \"50053\", \"530031\") // Remove login attempts with incorrect credentials or auto blocked IPs\n| extend AuthStep_1 = tostring(parse_json(AuthenticationDetails)[0].authenticationMethod) // Used to discover password authentication attempts\n| extend AuthSuccess_1 = tostring(parse_json(AuthenticationDetails)[0].succeeded) // Used to determine if password authentication succeeded\n| where (AuthStep_1&nbsp; in (\"Password\") and AuthSuccess_1 in (\"true\")) or ResultType in (\"0\", \"53003\", \"50076\") // Only show logins that succeeded or had correct credentials&nbsp;\n| summarize count() by TimeGenerated, UserPrincipalName, IPAddress, Location, ResultType, ResultDescription\n| sort by TimeGenerated desc\n</pre><div><strong>Note: Sign-ins that failed on CAP or MFA suggests first stage authentication (such as password) was successful and <em>may</em> be an indication of compromised credentials.</strong></div>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Identify suspicious sign-in activity",
+                          "description": "<div>Using the results from the previous step, check to see if there are successful log ins from a new IP as the attacker could have used a VPN to bypass conditional access.</div>"
+                        }
+                      },
+                      {
+                        "order": 4,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Remediate",
+                          "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review account activity across relevant services after the breach occurred.</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
