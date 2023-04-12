@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks-AccountCreatedAndDeletedInShortTimeframe",
+        "automationRuleName": "AddTasks - Account Created and Deleted in Short Timeframe",
         "automationRuleGuid": "9c1d6580-cc84-43d5-a48e-dff56becea6e",
         "existingRuleId": "672d0101-ce9f-4fa1-8650-4b46d057273b"
     },
