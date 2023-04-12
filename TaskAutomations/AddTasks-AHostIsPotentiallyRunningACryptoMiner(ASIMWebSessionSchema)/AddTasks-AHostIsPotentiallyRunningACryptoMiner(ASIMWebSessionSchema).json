@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "Add Tasks - A host is potentially running a crypto miner (ASIM Web Session schema)",
+        "automationRuleName": "AddTasks - A host is potentially running a crypto miner (ASIM Web Session schema)",
         "automationRuleGuid": "a5bb57c1-eade-406a-993b-af8a854883e7",
         "existingRuleId": "39742977-3409-4759-af53-9e7fee968857"
     },
