@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks - User Assigned Priviliged Role",
+        "automationRuleName": "AddTasks - User Assigned Privileged Role",
         "automationRuleGuid": "802527f7-eac5-4b13-9787-ce776cf0aff7",
         "existingRuleId": "8ea63a42-60ae-4353-adfe-68fdec901f9b"
     },
@@ -46,7 +46,7 @@
                         "order": 1,
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
-                          "title": "Determine if the User is required to have priviliged access",
+                          "title": "Determine if the User is required to have privileged access",
                           "description": "<div>This could involve:</div><ul><li>Reaching out to the necessary managers</li><li>Analysing the account and looking for anything that could be suspicious (Account was recently created, account name doesn't follow naming policy, account is performing strange actions , etc.)</li></ul>"
                         }
                       },
