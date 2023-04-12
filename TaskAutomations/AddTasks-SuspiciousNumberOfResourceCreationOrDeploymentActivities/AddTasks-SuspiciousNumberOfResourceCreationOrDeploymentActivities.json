@@ -55,7 +55,7 @@
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
                           "title": "Investigate",
-                          "description": "<ul><li>Extract details of the entities identified in the alert.</li><li>Check the Azure Activity table or perform a search to identify any records related to the activity.</li></ul><div><br></div><div><strong><em>Note:</em></strong><em> To find relevant events or activities involving the entities identified in an alert, the 'search' feature within Sentinel could be used. A sample KQL is shown below.</em></div><pre  spellcheck=\"false\">Search *\n|where * has “&lt;entity&gt;”\n|summarize count() by $table\n</pre><div><br></div>"
+                          "description": "<ul><li>Extract details of the entities identified in the alert.</li><li>Check the Azure Activity table or perform a search to identify any records related to the activity.</li></ul><div><br></div><div><strong><em>Note:</em></strong><em> To find relevant events or activities involving the entities identified in an alert, the 'search' feature within Sentinel could be used. A sample KQL is shown below.</em></div><pre  spellcheck=\"false\">search “&lt;entity&gt;”\n|summarize count() by $table\n</pre><div><br></div>"
                         }
                       },
                       {
