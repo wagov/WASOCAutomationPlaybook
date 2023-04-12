@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - New EXE deployed via Default Domain or Default Domain Controller Policies (ASIM Version)",
+        "automationRuleGuid": "42d33097-0ee8-48d8-8d13-967f4c74fa3b",
+        "existingRuleId": "c8f24e19-431a-415b-b06d-b23c98cc7fdb"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Check over Incident Entities",
+                        "description": "<div>Incident entity values such as the <strong>User</strong>, <strong>Process</strong>, <strong>FileName</strong>, <strong>CommandLine </strong>and <strong>ActingProcessName </strong>and will likely be relevant in developing an accurate conclusion.</div><div><br></div><div>Further, due to this being an ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM Process Event Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<div><strong>Check whether the EXE is known or expected to have been added to AD Domain Service Default Policies.</strong></div><div><br></div><div>If EXE appears suspicious, you can use tools such as the following to check hashes/sandboxing (however, be careful about uploading files to sandboxes due to privacy/adversarial monitoring):</div><ul><li><a href=\"https://security.microsoft.com/evaluation/overview\" rel=\"noopener noreferrer\" target=\"_blank\">MS365 Defender</a> (if available)</li><li><a href=\"https://www.virustotal.com/gui/home/search\" rel=\"noopener noreferrer\" target=\"_blank\">VirusTotal</a> </li><li><a href=\"https://www.hybrid-analysis.com/\" rel=\"noopener noreferrer\" target=\"_blank\">Hybrid Analysis</a></li></ul><div><br></div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediation (if required)",
+                        "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Isolate device (if able to)</li><li>Quarantine the responsible file</li><li>Revert default policies to known-good versions</li></ul><div><br></div>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

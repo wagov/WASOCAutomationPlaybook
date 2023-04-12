@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - TEARDROP memory-only dropper",
+        "automationRuleGuid": "04d7b0b2-018f-49b2-bb45-87a11061d59a",
+        "existingRuleId": "41773aaa-29a6-479f-892c-da8e48455b99"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract relevant values from incident entities",
+                        "description": "<div>Values such as the <strong>AccountCustomEntity (InitiatingProcessAccountUpn), HostCustomEntity (DeviceName) </strong>and <strong>FileHashCustomEntity (InitiatingProcessSHA1) </strong>will likely be relevant in developing an accurate conclusion.</div><div><br></div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<ul><li>Does the process seem suspicious (tools such as Virus Total can help for checking hashes)?</li><li>Is the process and file interaction otherwise something you would expect to see in your environment?</li><li>Which application/user was used in the incident and is this normal behaviour?</li></ul><div><br></div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>Follow Standard Operating Procedures for handling malware, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Isolate device</li><li>Stop and quarantine the responsible file</li></ul><div><br></div>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

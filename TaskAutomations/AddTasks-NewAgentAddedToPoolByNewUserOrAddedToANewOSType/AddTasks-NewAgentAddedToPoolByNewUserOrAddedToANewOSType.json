@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - New Agent Added to Pool by New User or Added to a New OS Type.",
+        "automationRuleGuid": "467fe961-d1ab-4fa0-b5ab-035e0462d6d6",
+        "existingRuleId": "78ce0ac9-c15d-44b6-9bfc-eda73af4319b"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract relevant values from incident entities",
+                        "description": null
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<ul><li>Is the ActorUPN, IPAddress, UserAgent, and OSDescription regular/recognisable in your environment or the noted Agent Pool? Is this normal or expected behaviour?</li><li>Was there suspicious activity leading up to/surrounding the incident?</li></ul><div><br></div><div><strong>NOTE</strong>: The Analytic Rule that generates this incident is intended to be modified in the Sentinel Analytics blade to tailor it to the environment. This may cause initial false positives.</div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Review related user/device's recent sign-ins and activities</li><li>Isolate device</li><li>Search for similar behaviour in other devices across your organisation</li><li>If incident is resulting in numerous false positives, the Sentinel Analytics Rule can be modified as per the comments in its KQL (to include allowed users that will normally add agents to pools)</li></ul><div><br></div>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

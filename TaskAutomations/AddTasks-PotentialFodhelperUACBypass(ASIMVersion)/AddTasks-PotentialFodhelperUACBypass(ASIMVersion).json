@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Potential Fodhelper UAC Bypass (ASIM Version)",
+        "automationRuleGuid": "9eeda985-ec49-435d-b699-c0bccedf224f",
+        "existingRuleId": "d4eaff60-318e-4b64-a96c-bf276011df91"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract relevant values from incident entities",
+                        "description": "<div>Values such as the <strong>Account</strong>, <strong>Dvc</strong>, <strong>Computer</strong>, <strong>CommandLine</strong>, <strong>ProcessName</strong>, <strong>ObjectName</strong>, <strong>ObjectValueName</strong> will likely be relevant in developing an accurate conclusion.</div><div><br></div><div>Further, due to the ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM Registry Schema and the ASMIN Process Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<ul><li>Which application/user was used in the incident and is this normal behaviour?</li><li>Was there suspicious activity leading up to the incident?</li><li>Is this expected and approved behaviour in your organisation?</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>Follow Standard Operating Procedures for remediation, some actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Review responsible account/device's recent sign-ins and activities</li><li>Isolate device</li><li>Disable responsible account</li><li>Stop and quarantine the responsible file(s)</li><li>Search for similar behaviour in other devices across your organisation</li></ul>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

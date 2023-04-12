@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Potential beaconing activity (ASIM Network Session schema)",
+        "automationRuleGuid": "6c9fdffa-1834-4121-81fe-3c510abfd5f3",
+        "existingRuleId": "65305b9c-7fd2-400c-ad14-e4cf993efac5"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": " Extract and investigate entities",
+                        "description": "<div><strong>Double check the external entities via enrichment</strong></div><div><br></div><div>Confirm whether the IP (and port) appears malicious with tools such as:</div><ul><li><a href=\"https://www.abuseipdb.com/\" rel=\"noopener noreferrer\" target=\"_blank\">Abuse IP DB</a></li><li><a href=\"https://www.ip2location.com/demo\" rel=\"noopener noreferrer\" target=\"_blank\">IP2Location</a></li><li><a href=\"https://ipinfo.io/\" rel=\"noopener noreferrer\" target=\"_blank\">IP Info</a></li><li><a href=\"https://www.virustotal.com/gui/home/search\" rel=\"noopener noreferrer\" target=\"_blank\">VirusTotal</a></li></ul><div><br></div><div>Further, due to the ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM Network Session Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Review related network activity and assess need for remediation",
+                        "description": "<div><strong>Review activity relating to the suspicious IP and port activity, this could include:</strong></div><ul><li>Sign-in activity</li><li>Device connections</li><li>Firewall logs</li></ul><div><br></div><div>To scope the recorded interactions involved with the external IP address you can use the \"search\" command in KQL:</div><pre  spellcheck=\"false\">search \"&lt;INSERT IP&gt;\"\n| summarize count() by $table\n</pre>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediation (if required)",
+                        "description": "<div><strong>Follow remediation Standard Operative Procedures, actions may include:</strong></div><ul><li>Blocking/sink holing the IP/domain at the gateway/firewall level</li><li>Isolating and scanning device</li><li>Other actions as required</li></ul>"
+                      }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
