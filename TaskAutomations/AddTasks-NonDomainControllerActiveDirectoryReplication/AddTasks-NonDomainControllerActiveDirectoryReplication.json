@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Non Domain Controller Active Directory Replication",
+        "automationRuleGuid":  "3d13152b-88e7-430a-8843-63eda3d33b05",
+        "existingRuleId": "bdf26b6f-5671-4120-a769-fdf4276d453d"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review Alert Details",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><br></div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAmCAYAAACoPemuAAAFjElEQVRYhc2YW2xURRjHf3POnt09bXfbbYF2F1tFsdoUUrSmEHkoaqIhUWlM1Grw8qTxwWjU+GC8EmOCxvjgJTwYr4kxRE1QUaOIEFAgqUoEsSgVqKHaC9vL3s5tzviwBam72y5YC/9ks5nJZL7f+c83c745QjkTiuR+EJxTCpD8ETZ2QvBso0xVAKHnoc45sGLy55gCQJvaLAQTGoSq5ohmUkqCl5nSNRVMApEE3LAHtH+trZj8qROTzSLY8G744gbQObkJizimQ0ViFqOWofCCgq4iOabAd05xTLH3T4vXdo3x6zEbw9Toaq3ipqUR4lXG7ID5TjlggIDjOZ/Nv0xwaMTjo30ZGkJhYsEorqt4e3eOz3tzXNtcQUNU45al1WXFT6VSRCKRssZqRXuFYPthm+e+nGDnQUX7vBoao2FaGgxaG4K01lZhSpN3dlk89tlx/hgvfOITklLS09NDV1cXGzZsKAuqNBiQc30ujIVpjBpIpUg7ktuuCLOq2WDC9jENjUvqTOorDcYsWTLAunXrWLVqFZs2baK/v/+/g2kCsq5kwvbIuh4ZVxI0QAjIuB5px2PccXGkj1bifeb7Pi0tLaxfv57Kyko0rWS4AhXPMfKnQc6ThDQNBNiuwlfgKUXGlaAJHAkICAVKZYSgu7sbyDvn++Wf3CXBbE8xarkYmoYQ+fa45TOak2SlRHiClO0jgj4XxIrvTiHyTuZyudOCmhZsRVMYT/ikHElAA1/Bq9+OkbIVUvnkPEHSdmmOaQS02S9Niq+BUrTMC9C1pJK+UYuczAMuiQdJRDVSjmTU8sh6Hvctj8061DRg+b8HV9ZRXyP4Y8LG9iXb+jJ8P5Aj5UqSlsvDnTHWtJZ3LlmWheu6/xFsUk01Bu91L6Q+KhhIOew4kuHnQZu06/JQZw2Pdtahi5mXUQjB4sWLqa+vLxusZI6d0PJGkw/WNvLC9hHe+34MFDx53QIev3p+2UHC4TB79uyZnePiVC2Lh3nr5oV0NJokogY3lbl8pyoYPL1KtCwwAEMXPLCy7rSBzlTlezvHOi0wBWQcH9efzSqxuKYFO56VvLhjhIGUB4DlKZ7dOsyu/uyME2ddn7Rz5peHacF2HsnwyMZjfLhvAgClFL8nHcZz/wR0ZKF7jlS82TPGuz+M40266/qq6NhSKlkoKmBzb5pbVtSy/UiG+1bECAiBoQvChmA0J3lqyzCHR23uvjxGV2uUl3aM8Ffaw9A0Nh9MYXk+F8QCzK8K8Mp3STxf8fzqBhLRmfdcyUKxd0RydMzl5TVxHE/xTV+GYECgCYEr4Zmvh1AK1rbV8EbPKPsHLV7vGWMo7dHVGqE9EWbl+ZUsS5g8vWWYppjBPR0xKozy3qslllLw8YE0B4ZsXt2dZO+fFp/0pgDQNcg6PjuP5Dg6YvPlb2mGM5KjSZeL64Lcf2UdyxtNFtUGaa0PEY8EWN1cxba+DL8MOUTCellghZ5qkHUkWw6luX1ZNZfOD3FvR4xPe/OghibQdWhZEKI9EeKu9hgjWYmhCYSA0KQjtlRIO5+Ld1xew1UXVXLnxmNUhzW622a+IxSCBTV29GWwpOLpa+ZjGnlTf/rLZmtfBkMXVId0bmur5omvBtk3YNFcH6a7rZqgLk4WAB3nmTzx1RCLag0Gxj36By1qTI2mmvJuVoVgjqKjyeT9W6MnoQBeWxNH+goFREMapqERjwRIZjyaF4RIRAK8fGOcWjO/VNe3RDivOkBVSCeoCw4Ohlg0L8gl80JnCOZDrNLk31VWXUVhblyWCE9pxyP/TKcLaF9onmwvKlHlAoW3/qJgSkJ2oOjg/03WUEHXVDAdyA3ARy1zRDQpJQssKuKYD/bEHBGdohk/QxUZdDYUQEkofcM/axLn6sfhvwGl5SRe9N2vGQAAAABJRU5ErkJggg==\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Close or Escalate",
+                          "description": "<ul><li>Confirm if the IP address(s), domains, and account names are known to the organisation.</li><li>If the entity details are not known, then the incident should be escalated and further investigated.</li></ul><div><br></div><ul><li>Use the following KQL as a guide.</li></ul><div><br></div><pre  spellcheck=\"false\">SecurityAlert\n|summarize arg_max(TimeGenerated, *) by SystemAlertId\n|where SystemAlertId in(\"&lt;alertID&gt;\")&nbsp;\n|project Entities\n|extend Entities = todynamic(Entities)\n|mv-expand Entities\n|evaluate bag_unpack(Entities)\n</pre><div><br></div>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

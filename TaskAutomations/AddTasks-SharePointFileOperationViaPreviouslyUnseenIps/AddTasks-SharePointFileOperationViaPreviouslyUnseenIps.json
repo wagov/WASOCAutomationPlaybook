@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks-SharePointFileOperationViaPreviouslyUnseenIps",
+        "automationRuleGuid": "80417d17-4eb0-49e7-923c-6acba410ce3d",
+        "existingRuleId": "abf2defc-50a7-4849-9bff-e591d1f54722"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2023-03-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review the incident and extract entity(s) details",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,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\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate SharePointFileOperation Activity and IP addresses",
+                          "description": "<ul><li>Identify the IP addresses used in the activity and search for any Abuse reports to determine if they are malicious IPs.</li><li>Use the below KQL to quickly identify SharePoint File Operation activity.</li></ul><div><br></div><pre  spellcheck=\"false\">OfficeActivity\n| where TimeGenerated between (todatetime('yyyy-mm-ddT00:00:00.000Z')..todatetime('yyyy-mm-ddT00:00:00.000Z'))\n| where RecordType == \"SharePointFileOperation\"\n| where&nbsp;UserId has \"&lt;user'sName&gt;\"\n| summarize count(), make_set(ClientIP) by UserId, UserType, UserAgent, ClientProcessName, ItemType, Operation, RecordType, Site_Url, SourceRelativeUrl, SourceFileName, EventSource, SourceSystem\n</pre><div><br></div>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Concluding the investigation",
+                          "description": "<ul><li>If the IP addresses are external or are not known to the organisation, confirm the activity with the user.</li><li>If the IP addresses are found to be malicious (via Abuse IP checks), the incident should be escalated and further investigated.</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

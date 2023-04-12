@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - NOBELIUM - suspicious rundll32.exe execution of vbscript (Normalized Process Events)",
+        "automationRuleGuid":  "2b71dcad-196f-4d50-a7f3-9b43435fc4b3",
+        "existingRuleId": "e1ab8b56-fd2a-4af7-b0a7-dee14b7948c4"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Review alert details",
+                          "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Investigate",
+                          "description": "<ul><li>Extract the entity details given in the alert.</li><li>Perform a search for the identified entities within Sentinel using the following KQL as a template.</li></ul><div><br></div><div><br></div><div><br></div><pre  spellcheck=\"false\">Search *\n|where * has “&lt;entity&gt;”\n|summarize count() by $table\n</pre>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Close or Escalate",
+                          "description": "<ul><li>If the execution of the vbscript is not common or not expected, then escalate for confirmation.</li><li>If the activity is not approved, then terminate/stop the execution of the process, isolate device, perform an Antivirus scan, quarantine any related files (run EDR in block mode).</li></ul>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

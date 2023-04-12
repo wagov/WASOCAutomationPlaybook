@@ -1,0 +1,74 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Rare RDP Connections",
+        "automationRuleGuid": "e71fd4cf-9e08-4404-a2e7-9f6b314f9db2",
+        "existingRuleId": "8fffceed-6f16-42ac-aff2-3d2c02a9c732"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions": [
+                    {
+                        "order": 1,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Gather Entity details",
+                          "description": "<div><span style=\"background-color: rgb(255, 255, 255);\">Check the entities to gather details of the devices/hostnames, IP address(s) and account names involved in the RDP activity.&nbsp;</span></div>"
+                        }
+                      },
+                      {
+                        "order": 2,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Check the IP address of the source ",
+                          "description": "<ul><li>Use IP database to verify the IP address or to determine if it is malicious.&nbsp;</li></ul><div><br></div><div><br></div><div><br></div><pre  spellcheck=\"false\">SecurityEvent&nbsp;\n|where TimeGenerated between ((todatetime('2022-11-14T23:25:10.3951708Z')-5m)..(todatetime('2022-11-28T23:25:10.3951708Z')+5m))&nbsp;\n|where * has \"&lt;accountName&gt;\" and * has \"&lt;hostName&gt;\" and * has \"&lt;IP address&gt;\"&nbsp;\n|summarize count(), make_set(IpAddress) by Computer, TargetUserName, TargetServerName, Process, Activity&nbsp;\n</pre>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
+                          "title": "Check the source and activity ",
+                          "description": "<ul><li>If the IP address is local and account name is known or identifiable, verify with the account user of the activity.&nbsp;</li><li>If the activity is a successful logon event and source is unknown, escalate the incident for further investigation.&nbsp;</li></ul><div><br></div><div><br></div><div><br></div><div><br></div><div><br></div><ul><li>Following KQL can be used to identify the user's details.</li></ul><pre  spellcheck=\"false\">IdentityInfo\n|where * has \"&lt;accountName&gt;\"\n</pre>"
+                        }
+                      }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
