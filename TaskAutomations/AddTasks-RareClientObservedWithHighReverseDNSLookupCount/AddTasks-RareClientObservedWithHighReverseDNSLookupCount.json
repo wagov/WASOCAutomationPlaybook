@@ -63,7 +63,7 @@
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
                           "title": "Close or Escalate",
-                          "description": "<ul><li>If the device(s) are domain controllers and , then the querying of domains could be usual activity and should be confirmed.</li><li>If the device(s) is not known to perform DNS querying, then the incident should be escalated for further investigation.</li></ul>"
+                          "description": "<ul><li>If the device(s) are domain controllers, then the querying of domains could be usual activity and should be confirmed.</li><li>If the device(s) is not known to perform DNS querying, then the incident should be escalated for further investigation.</li></ul>"
                         }
                       }
                 ]
