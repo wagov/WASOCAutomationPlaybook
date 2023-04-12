@@ -1,0 +1,82 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - A client made a web request to a potentially harmful file (ASIM Web Session schema)",
+        "automationRuleGuid": "8a80a343-6c9f-4f7c-a282-44effcc84fb5",
+        "existingRuleId": "3fac13e7-ad82-4d9d-aded-8e98b1f88e65"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions":[
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract relevant values from incident entities",
+                        "description": "<div>Values such as the <strong>SrcIpAddr</strong>, <strong>requestedFileName</strong> and <strong>Url</strong> will likely be relevant in developing an accurate conclusion.</div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Review and enrich the extracted entities",
+                        "description": "<div><strong>The enrichment services listed are only suggestions, there are many other potential sources. The suggested sources are not required to be used.</strong></div><div><br></div><ol><li>Determine if the entities extracted are approved and expected for your environment</li><li>Enrich the entities:</li></ol><ul><li><strong>SrcIpAddr</strong> - Check the IP reputation (possible sources: AbuseIPDB, VirusTotal)</li><li><strong>requestedFileName</strong> - If possible, search your environment for the file and get the hash. Enrich the hash (possible source: VirusTotal)</li><li><strong>Url</strong> - Check the domain reputation (possible source: VirusTotal)</li></ul><div><br></div><div><br></div><div><br></div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<ul><li>Is the downloaded file something you would expect to see in your environment?</li><li>Which application/user initiated the download and is this normal behaviour?</li><li>Was the suspicious file executed, what did it do if so?</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 4,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Isolate device</li><li>Stop and quarantine the responsible file</li></ul>"
+                      }
+                    }
+                  ]
+            }
+        }
+    ],
+    "outputs": {}
+}

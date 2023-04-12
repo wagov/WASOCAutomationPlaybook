@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Mail.Read Permissions Granted to Application",
+        "automationRuleGuid": "9547216e-76bf-4747-a890-8e22cb38590a",
+        "existingRuleId": "c14a01f0-ef23-426e-90c0-b9df8c869f65"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions":[
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract relevant values from incident entities",
+                        "description": "<div>Values such as the <strong>InitiatingUser, UserIPAddress</strong>, <strong>UserAgent</strong>, <strong>PermissionsAddedTo</strong>, <strong>Permissions</strong>, <strong>AppName </strong>and <strong>RuleDetail</strong> will likely be relevant in developing an accurate conclusion.</div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Enrich UserIPAddress",
+                        "description": "<div><strong>The enrichment services listed are only suggestions, there are many other potential sources. The suggested sources are not required to be used.</strong></div><ul><li>Is this IP known to your organisation?</li><li>Is the IP in from a location you would expect to see from your users?</li><li>Do threat intelligence sources list the IP as known to be malicious? (suggested sources: AbuseIPDB, VirusTotal)</li></ul><div><strong>﻿</strong></div>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Review InitiatingUser account sign-ins for suspicious activity",
+                        "description": null
+                      }
+                    },
+                    {
+                      "order": 4,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Confirm if suspicious activity is expected and approved",
+                        "description": "<ul><li>Is the the added application expected and approved for your environment?</li><li>Confirm if user's are responsible for adding the application and/or suspicious logins (It is recommended not to contact the user directly to avoid a scenario of a threat actor with control of the account replying with incorrect information. A common method is to instead contact the user's manager).</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 5,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>If there was unauthorised logins or rule creation, possible actions may include:</strong></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review applications that have access and inbox rules, removing where necessary.</li><li>Review account activity across relevant services after the breach occurred.</li></ul>"
+                      }
+                    }
+                  ]
+            }
+        }
+    ],
+    "outputs": {}
+}

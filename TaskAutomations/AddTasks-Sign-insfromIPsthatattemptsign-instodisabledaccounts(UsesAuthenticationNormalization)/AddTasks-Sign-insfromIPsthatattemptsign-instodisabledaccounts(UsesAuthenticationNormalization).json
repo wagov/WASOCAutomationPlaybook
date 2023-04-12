@@ -1,0 +1,90 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "existingWorkspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Sentinel workspace where the automation rule will be deployed"
+            }
+        }
+    },
+    "variables": {
+        "automationRuleName": "AddTasks - Sign-ins from IPs that attempt sign-ins to disabled accounts (Uses Authentication Normalization)",
+        "automationRuleGuid": "c4ce37da-44c5-4203-8704-3944e0a70926",
+        "existingRuleId": "a2e8076e-5b43-425a-945e-4966da27799c"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.SecurityInsights/automationRules",
+            "name": "[variables('automationRuleGuid')]",
+            "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+            "apiVersion": "2022-12-01-preview",
+            "properties": {
+                "displayName": "[variables('automationRuleName')]",
+                "order": 100,
+                "triggeringLogic": {
+                    "isEnabled": true,
+                    "expirationTimeUtc": null,
+                    "triggersOn": "Incidents",
+                    "triggersWhen": "Created",
+                    "conditions": [
+                            {
+                                "conditionType": "Property",
+                                "conditionProperties": {
+                                    "propertyName": "IncidentRelatedAnalyticRuleIds",
+                                    "operator": "Contains",
+                                    "propertyValues": [
+                                        "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights',variables('existingRuleId'))]"
+                                    ]
+                                }
+                            }
+                    ]
+                },
+                "actions":[
+                    {
+                      "order": 1,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Extract IP from incident entities",
+                        "description": "<div><br></div>"
+                      }
+                    },
+                    {
+                      "order": 2,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Enrich IP",
+                        "description": "<div><strong>The enrichment services listed are only suggestions, there are many other potential sources. The suggested sources are not required to be used.</strong></div><ul><li>Is this IP known to your organisation?</li><li>Is the IP in from a location you would expect to see from your users?</li><li>Do threat intelligence sources list the IP as known to be malicious? (suggested sources: AbuseIPDB, VirusTotal)</li></ul>"
+                      }
+                    },
+                    {
+                      "order": 3,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Review sign-in activity for IP",
+                        "description": "<div>Make note of the accounts with successful logins from the suspicious IP</div><div><br></div><div><strong>Possible KQL query</strong></div><pre  spellcheck=\"false\">imAuthentication\n| where TimeGenerated &gt; ago(3d) // Adjust lookback time as necessary\n| where IPAddress in (\"[IPAddress]\") // Comma seperated list of IPs\n//| where EventResult in (\"Success\") // Only show logins that suceeded\n| project TimeGenerated, TargetUsername, IPAddress, EventType, EventResult, EventResultDetails, LogonMethod, LogonTarget\n| summarize make_set(TargetUsername), make_set(EventResultDetails), count() by IPAddress, EventResult, LogonMethod\n</pre>"
+                      }
+                    },
+                    {
+                      "order": 4,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Determine if login activity is expected and approved",
+                        "description": "<div>It is not recommended to contact the user directly to avoid a scenario of a threat actor with control of the account replying with incorrect information. A common method is to instead contact the user's manager.</div>"
+                      }
+                    },
+                    {
+                      "order": 5,
+                      "actionType": "AddIncidentTask",
+                      "actionConfiguration": {
+                        "title": "Remediate (if required)",
+                        "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review account activity across relevant services after the breach occurred.</li></ul>"
+                      }
+                    }
+                  ]
+            }
+        }
+    ],
+    "outputs": {}
+}
