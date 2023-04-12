@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks-SharePointFileOperationViaPreviouslyUnseenIps",
+        "automationRuleName": "AddTasks - SharePointFileOperation via previously unseen IPs",
         "automationRuleGuid": "80417d17-4eb0-49e7-923c-6acba410ce3d",
         "existingRuleId": "abf2defc-50a7-4849-9bff-e591d1f54722"
     },
