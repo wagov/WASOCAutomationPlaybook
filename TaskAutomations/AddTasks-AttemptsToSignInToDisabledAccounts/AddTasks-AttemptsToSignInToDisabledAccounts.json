@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "Add Tasks - Attempts to sign in to disabled accounts",
+        "automationRuleName": "AddTasks - Attempts to sign in to disabled accounts",
         "automationRuleGuid": "e7141384-de23-411b-bc95-4cc8378cfa25",
         "existingRuleId": "37f068ad-9155-4afe-a1fd-09a377aadf81"
     },
