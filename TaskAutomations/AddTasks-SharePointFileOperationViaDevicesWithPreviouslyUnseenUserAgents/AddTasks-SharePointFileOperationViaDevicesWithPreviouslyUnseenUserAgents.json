@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks-SharePointFileOperationViaDevicesWithPreviouslyUnseenUserAgents",
+        "automationRuleName": "AddTasks - SharePointFileOperation via devices with previously unseen user agents",
         "automationRuleGuid": "cfeba8a1-e395-45d0-8713-ce8e226d0f2d",
         "existingRuleId": "ac8b2b3e-2e0e-415d-8f73-7a25dbe4790f"
     },
