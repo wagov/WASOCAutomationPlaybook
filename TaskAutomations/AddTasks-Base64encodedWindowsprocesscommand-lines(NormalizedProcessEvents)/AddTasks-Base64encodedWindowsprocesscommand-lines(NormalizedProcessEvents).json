@@ -63,20 +63,12 @@
                   "order": 3,
                   "actionType": "AddIncidentTask",
                   "actionConfiguration": {
-                    "title": "Review the decoded base64",
-                    "description": "<div>Is the decoded base64 a command you would expect to see in your environment?</div>"
-                  }
-                },
-                {
-                  "order": 4,
-                  "actionType": "AddIncidentTask",
-                  "actionConfiguration": {
                     "title": "Confirm if suspicious activity is expected and approved",
                     "description": "<ul><li>Is the decoded base64 a command you would expect to see in your environment?</li><li>Which application/user initiated the suspicious command and is this normal behaviour?</li></ul>"
                   }
                 },
                 {
-                  "order": 5,
+                  "order": 4,
                   "actionType": "AddIncidentTask",
                   "actionConfiguration": {
                     "title": "Remediate (if required)",
