@@ -24,7 +24,7 @@ for rule in rule_list:
         data = json.load(f)
         rule_name = data['variables']['automationRuleName']
         unencoded_url = f'https://raw.githubusercontent.com/wagov/{file_location}'
-        encoded_url = urllib.parse.quote(unencoded_url)
+        encoded_url = urllib.parse.quote_plus(unencoded_url)
         final_url = f'{DEPLOY_TO_AZURE}{encoded_url})'
         print(final_url)
         
