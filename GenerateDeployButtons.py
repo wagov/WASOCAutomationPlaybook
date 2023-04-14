@@ -9,8 +9,9 @@ DEPLOY_BASE_URL = ''
 
 rule_list = []
 deploy_list = []
-deploy_list.append("| **Rule Name** | **Deploy Rule** |")
-deploy_list.append("|-|-|")
+table_head = []
+table_head.append("| **Rule Name** | **Deploy Rule** |")
+table_head.append("|-|-|")
 
 for folder in os.listdir(REPO):
     # simple check to exclude files
@@ -30,5 +31,7 @@ for rule in rule_list:
         deploy_list.append(f"| {rule_name} | {final_url} |")
         
 with open('deploy.md', 'w') as f:
-    for line in deploy_list:
+    # Sort the list before writing to file
+    sorted_list = table_head + sorted(deploy_list)
+    for line in sorted_list:
         f.write(f'{line}\n')
