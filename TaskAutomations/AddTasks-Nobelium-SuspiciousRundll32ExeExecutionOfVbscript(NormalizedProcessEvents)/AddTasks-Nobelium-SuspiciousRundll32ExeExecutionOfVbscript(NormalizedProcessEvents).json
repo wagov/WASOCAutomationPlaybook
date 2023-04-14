@@ -63,7 +63,7 @@
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
                           "title": "Close or Escalate",
-                          "description": "<ul><li>If the execution of the vbscript is not common or not expected, then escalate for confirmation.</li><li>If the activity is not approved, then terminate/stop the execution of the process, isolate device, perform an Antivirus scan, quarantine any related files (run EDR in block mode).</li></ul>"
+                          "description": "<div>Follow standard operating procedures for triaging suspicious process executions, which may include:</div><ul><li>Identifying if the execution of vbscripts is common or unexpected expected activity.</li><li>Confirming (with the relevant team(s)) if the activity is approved, or not.</li></ul>"
                         }
                       }
                 ]

@@ -71,7 +71,7 @@
                     "actionType": "AddIncidentTask",
                     "actionConfiguration": {
                       "title": "Determine need for containment and remediation",
-                      "description": "<div>If malicious activity has occurred and was not stopped by any form of firewall, XDR, or security tooling, follow standard operating procedures for containment and remediation.</div><div><br></div><div>These would commonly involve:</div><ul><li>Isolate and scan affected devices</li><li>Reimage/restore affect devices</li><li>Reset affected credentials</li><li>Revoke active sessions</li><li>Other actions as required</li></ul>"
+                      "description": "<div>If malicious activity has occurred and was not stopped by any form of security solution(s) such as firewall, XDR, or security tooling, follow standard operating procedures for containment and remediation.</div><div><br></div><div>These would commonly involve:</div><ul><li>Isolate and scan affected devices</li><li>Reimage/restore affected devices</li><li>Reset affected credentials</li><li>Revoke active sessions</li><li>Other actions as required</li></ul>"
                     }
                   }
                 ]

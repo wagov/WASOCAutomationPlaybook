@@ -55,7 +55,7 @@
                       "actionType": "AddIncidentTask",
                       "actionConfiguration": {
                         "title": "Confirm if suspicious activity is expected and approved",
-                        "description": "<ul><li>Does the child process seem suspicious (tools such as Virus Total can help for checking hashes)?</li><li>Is the child process otherwise something you would expect to see in your environment, especially with SolarWinds.Orion.Core.BusinessLayer.dll?</li><li>Which application/user was used in the incident and is this normal behaviour?</li><li>Did the child process reach out to any external IPs, if so, are they suspicious (tools such as AbuseIPDB, IP2Location, etc. can help check).</li><li><br></li></ul><div><br></div>"
+                        "description": "<ul><li>Does the child process seem suspicious (tools such as Virus Total can help for checking hashes)?</li><li>Is the child process otherwise something you would expect to see in your environment, especially with SolarWinds.Orion.Core.BusinessLayer.dll?</li><li>Which application/user was used in the incident and is this normal behaviour?</li><li>Did the child process reach out to any external IPs, if so, are they suspicious (tools such as AbuseIPDB, IP2Location, etc. can help check).</li></ul><div><br></div>"
                       }
                     },
                     {

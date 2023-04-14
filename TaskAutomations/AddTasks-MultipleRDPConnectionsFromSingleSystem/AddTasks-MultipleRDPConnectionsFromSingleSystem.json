@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks-MultipleRDPConnectionsFromSingleSystem",
+        "automationRuleName": "AddTasks - Multiple RDP connections from Single System",
         "automationRuleGuid": "014a00e9-8156-48e3-9385-18e79aee01d6",
         "existingRuleId": "b572e11e-7cc4-41b2-bee1-74d89a8d4157"
     },

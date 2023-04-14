@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "Add Tasks - A host is potentially running a hacking tool (ASIM Web Session schema)",
+        "automationRuleName": "AddTasks - A host is potentially running a hacking tool (ASIM Web Session schema)",
         "automationRuleGuid": "a41c4a8e-27e0-4784-9d4f-a3d3f5cea70c",
         "existingRuleId": "9cd1632b-f8fc-4573-ab21-466317a19876"
     },

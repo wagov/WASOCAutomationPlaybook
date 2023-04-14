@@ -63,7 +63,7 @@
                       "actionType": "AddIncidentTask",
                       "actionConfiguration": {
                         "title": "Remediate (if required)",
-                        "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><ul><li>Review account activity across relevant services after the breach occurred.</li><li>Review access policies to allow/block access from other tenants</li></ul>"
+                        "description": "<div><strong>If there were unauthorised logins, possible actions may include:</strong></div><ul><li>Review account activity across relevant services after the breach occurred.</li><li>Review access policies to allow/block access from other tenants.</li></ul>"
                       }
                     }
                   ]

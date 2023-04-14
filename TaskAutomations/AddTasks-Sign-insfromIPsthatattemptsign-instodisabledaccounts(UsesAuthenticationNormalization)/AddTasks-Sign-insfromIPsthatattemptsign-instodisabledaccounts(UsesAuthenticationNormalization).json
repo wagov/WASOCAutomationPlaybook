@@ -55,7 +55,7 @@
                       "actionType": "AddIncidentTask",
                       "actionConfiguration": {
                         "title": "Enrich IP",
-                        "description": "<div><strong>The enrichment services listed are only suggestions, there are many other potential sources. The suggested sources are not required to be used.</strong></div><ul><li>Is this IP known to your organisation?</li><li>Is the IP in from a location you would expect to see from your users?</li><li>Do threat intelligence sources list the IP as known to be malicious? (suggested sources: AbuseIPDB, VirusTotal)</li></ul>"
+                        "description": "<div><strong>The enrichment services listed are only suggestions, there are many other potential sources. The suggested sources are not required to be used.</strong></div><ul><li>Is this IP known to your organisation?</li><li>Is the IP from a location you would expect to see from your users?</li><li>Do threat intelligence sources list the IP as known to be malicious? (suggested sources: AbuseIPDB, VirusTotal)</li></ul>"
                       }
                     },
                     {
