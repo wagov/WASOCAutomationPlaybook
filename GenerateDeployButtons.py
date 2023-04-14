@@ -26,7 +26,6 @@ for rule in rule_list:
         unencoded_url = f'https://raw.githubusercontent.com/wagov/{file_location}'
         encoded_url = urllib.parse.quote_plus(unencoded_url)
         final_url = f'{DEPLOY_TO_AZURE}{encoded_url})'
-        print(final_url)
         
         deploy_list.append(f"| {rule_name} | {final_url} |")
         
