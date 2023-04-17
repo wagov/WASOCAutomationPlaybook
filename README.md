@@ -1,6 +1,5 @@
 **WASOC Automation Rules**
 
-**Add Automation Rule Package**
 Use the following deploy button to deploy the paired automation rules for the WASOC Analytic Rule package:
 | **Rule Name** | **Deploy Rule** |
 |-|-|
