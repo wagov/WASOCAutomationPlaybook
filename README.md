@@ -3,6 +3,7 @@
 **Add Automation Rule Package**
 Use the following deploy button to deploy the paired automation rules for the WASOC Analytic Rule package:
 | **Rule Name** | **Deploy Rule** |
+|-|-|
 | Complete Automation Rule Package | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2Fmain%2FCollatedDeployment.json) |
 
 
