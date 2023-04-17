@@ -1,3 +1,11 @@
+**WASOC Automation Rules**
+
+**Add Automation Rule Package**
+Use the following deploy button to deploy the paired automation rules for the WASOC Analytic Rule package:
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2Fmain%2FCollatedDeployment.json)
+
+
+To add individual autmation rules, deploy each of the preferred rules below:
 | **Rule Name** | **Deploy Rule** |
 |-|-|
 | AddTasks - (Preview) TI map Domain entity to Dns Events (ASIM DNS Schema) | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwagov%2FWASOCAutomationPlaybook%2FTaskAutomations%2FAddTasks-%28Preview%29TIMapDomainEntityToDnsEvents%28ASIMDNSSchema%29%2FAddTasks-%28Preview%29TIMapDomainEntityToDnsEvents%28ASIMDNSSchema%29.json) |
