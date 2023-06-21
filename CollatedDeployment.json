@@ -136,60 +136,6 @@
     },
     {
       "type": "Microsoft.SecurityInsights/automationRules",
-      "name": "2b71dcad-196f-4d50-a7f3-9b43435fc4b3",
-      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
-      "apiVersion": "2022-12-01-preview",
-      "properties": {
-        "displayName": "AddTasks - NOBELIUM - suspicious rundll32.exe execution of vbscript (Normalized Process Events)",
-        "order": 100,
-        "triggeringLogic": {
-          "isEnabled": true,
-          "expirationTimeUtc": null,
-          "triggersOn": "Incidents",
-          "triggersWhen": "Created",
-          "conditions": [
-            {
-              "conditionType": "Property",
-              "conditionProperties": {
-                "propertyName": "IncidentRelatedAnalyticRuleIds",
-                "operator": "Contains",
-                "propertyValues": [
-                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','e1ab8b56-fd2a-4af7-b0a7-dee14b7948c4')]"
-                ]
-              }
-            }
-          ]
-        },
-        "actions": [
-          {
-            "order": 1,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Review alert details",
-              "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
-            }
-          },
-          {
-            "order": 2,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Investigate",
-              "description": "<ul><li>Extract the entity details given in the alert.</li><li>Perform a search for the identified entities within Sentinel using the following KQL as a template.</li></ul><div><br></div><div><br></div><div><br></div><pre  spellcheck=\"false\">Search *\n|where * has \u201c&lt;entity&gt;\u201d\n|summarize count() by $table\n</pre>"
-            }
-          },
-          {
-            "order": 3,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Close or Escalate",
-              "description": "<div>Follow standard operating procedures for triaging suspicious process executions, which may include:</div><ul><li>Identifying if the execution of vbscripts is common or unexpected expected activity.</li><li>Confirming (with the relevant team(s)) if the activity is approved, or not.</li></ul>"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.SecurityInsights/automationRules",
       "name": "e71fd4cf-9e08-4404-a2e7-9f6b314f9db2",
       "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
       "apiVersion": "2022-12-01-preview",
@@ -291,60 +237,6 @@
             "actionConfiguration": {
               "title": "Remediate (if necessary)",
               "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><div><strong><span class=\"ql-cursor\">\ufeff</span></strong></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review account activity across relevant services after the breach occurred.</li></ul><div><br></div>"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.SecurityInsights/automationRules",
-      "name": "68517adc-5b54-4cb3-a104-22aee236f3df",
-      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
-      "apiVersion": "2022-12-01-preview",
-      "properties": {
-        "displayName": "AddTasks - CoreBackUp Deletion in correlation with other related security alerts",
-        "order": 100,
-        "triggeringLogic": {
-          "isEnabled": true,
-          "expirationTimeUtc": null,
-          "triggersOn": "Incidents",
-          "triggersWhen": "Created",
-          "conditions": [
-            {
-              "conditionType": "Property",
-              "conditionProperties": {
-                "propertyName": "IncidentRelatedAnalyticRuleIds",
-                "operator": "Contains",
-                "propertyValues": [
-                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','1088ac2e-3910-4b44-be05-f808f9aa1a4c')]"
-                ]
-              }
-            }
-          ]
-        },
-        "actions": [
-          {
-            "order": 1,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Investigate the surrounding alerts",
-              "description": "<div>Determine if the related alerts point to malicious activities such as ransomware.</div>"
-            }
-          },
-          {
-            "order": 2,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Confirm internally if the backups are to be deleted",
-              "description": "<div>Check with the team responsible for backups if this is part of normal business processes.</div>"
-            }
-          },
-          {
-            "order": 3,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Remediate (if necessary)",
-              "description": "<div>Remediation could include:</div><div><br></div><ul><li>Securing the backups</li><li>Disabling the account that is attempting to delete the backups</li><li>Further information regarding securing backups can be found here: https://www.cyber.gov.au/backups#accordion-2780</li></ul>"
             }
           }
         ]
@@ -708,52 +600,6 @@
     },
     {
       "type": "Microsoft.SecurityInsights/automationRules",
-      "name": "fe16cdb0-bb98-4939-accb-e8eef8fcb9bd",
-      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
-      "apiVersion": "2022-12-01-preview",
-      "properties": {
-        "displayName": "AddTasks - MSHTML vulnerability CVE-2021-40444 attack",
-        "order": 100,
-        "triggeringLogic": {
-          "isEnabled": true,
-          "expirationTimeUtc": null,
-          "triggersOn": "Incidents",
-          "triggersWhen": "Created",
-          "conditions": [
-            {
-              "conditionType": "Property",
-              "conditionProperties": {
-                "propertyName": "IncidentRelatedAnalyticRuleIds",
-                "operator": "Contains",
-                "propertyValues": [
-                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','8049d403-5f19-4e82-99da-227ddf957191')]"
-                ]
-              }
-            }
-          ]
-        },
-        "actions": [
-          {
-            "order": 1,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Determine if the file is causing malicious behaviour",
-              "description": "<div>Investigate for:</div><div><br></div><div><br></div><div><br></div><div><br></div><ul><li>Suspicious behaviour by Office applications</li><li>Suspicious use of the Control Panel</li></ul>"
-            }
-          },
-          {
-            "order": 2,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Remediate (if necessary)",
-              "description": "<div>Remediation could include:</div><ul><li>Isolating the device</li><li>Removing malicious files</li><li>Ensuring that the threat actor has not moved laterally</li><li>Scanning the environment for the vulnerability</li><li>Further information (Including KQL to check for instances) can be found here: https://www.microsoft.com/en-us/security/blog/2021/09/15/analyzing-attacks-that-exploit-the-mshtml-cve-2021-40444-vulnerability/</li></ul>"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.SecurityInsights/automationRules",
       "name": "3d13152b-88e7-430a-8843-63eda3d33b05",
       "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
       "apiVersion": "2022-12-01-preview",
@@ -793,6 +639,60 @@
             "actionConfiguration": {
               "title": "Close or Escalate",
               "description": "<ul><li>Confirm if the IP address(s), domains, and account names are known to the organisation.</li><li>If the actions or the entities are acting outside of the normal operating hours or if the entity details are unknown, then it should be escalated and further investigated.</li><li>Use the following KQL as a guide.</li></ul><div><br></div><pre  spellcheck=\"false\">SecurityAlert\n|summarize arg_max(TimeGenerated, *) by SystemAlertId\n|where SystemAlertId in(\"&lt;alertID&gt;\")&nbsp;\n|project Entities\n|extend Entities = todynamic(Entities)\n|mv-expand Entities\n|evaluate bag_unpack(Entities)\n</pre>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.SecurityInsights/automationRules",
+      "name": "6c9fdffa-1834-4121-81fe-3c510abfd5f3",
+      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+      "apiVersion": "2022-12-01-preview",
+      "properties": {
+        "displayName": "AddTasks - Network Port Sweep from External Network (ASIM Network Session schema)",
+        "order": 100,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','65305b9c-7fd2-400c-ad14-e4cf993efac5')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": " Extract and investigate entities",
+              "description": "<div><strong>Double check the external entities via enrichment</strong></div><div><br></div><div>Confirm whether the IP (and port) appears malicious with tools such as:</div><ul><li><a href=\"https://www.abuseipdb.com/\" rel=\"noopener noreferrer\" target=\"_blank\">Abuse IP DB</a></li><li><a href=\"https://www.ip2location.com/demo\" rel=\"noopener noreferrer\" target=\"_blank\">IP2Location</a></li><li><a href=\"https://ipinfo.io/\" rel=\"noopener noreferrer\" target=\"_blank\">IP Info</a></li><li><a href=\"https://www.virustotal.com/gui/home/search\" rel=\"noopener noreferrer\" target=\"_blank\">VirusTotal</a></li></ul><div><br></div><div>Further, due to the ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM Network Session Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Review related network activity and assess need for remediation",
+              "description": "<div><strong>Review activity relating to the suspicious IP and port activity, this could include:</strong></div><ul><li>Sign-in activity</li><li>Device connections</li><li>Firewall logs</li></ul><div><br></div><div>To scope the recorded interactions involved with the external IP address you can use the \"search\" command in KQL:</div><pre  spellcheck=\"false\">search \"&lt;INSERT IP&gt;\"\n| summarize count() by $table\n</pre>"
+            }
+          },
+          {
+            "order": 3,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Remediation (if required)",
+              "description": "<div><strong>Follow remediation Standard Operative Procedures, actions may include:</strong></div><ul><li>Blocking/sink holing the IP/domain at the gateway/firewall level</li><li>Isolating and scanning device</li><li>Other actions as required</li></ul>"
             }
           }
         ]
@@ -1165,6 +1065,52 @@
             "actionConfiguration": {
               "title": "Remediate (if required)",
               "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Isolate device</li><li>Stop and quarantine the responsible file</li></ul>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.SecurityInsights/automationRules",
+      "name": "c12255f2-8925-43d1-a82a-1e984ab30e52",
+      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+      "apiVersion": "2022-12-01-preview",
+      "properties": {
+        "displayName": "AddTasks - Threat Essentials - User Assigned Privileged Role",
+        "order": 100,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','a52e87da-b09d-4df8-8471-7894be247865')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Determine if the User is required to have privileged access",
+              "description": "<div>This could involve:</div><div><br></div><div><br></div><ul><li>Reaching out to the necessary managers</li><li>Analysing the account and looking for anything that could be suspicious (Account was recently created, account name doesn't follow naming policy, account is performing strange actions , etc.)</li></ul>"
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Remediate (if necessary)",
+              "description": "<div>Remediation could include:</div><div><br></div><div><br></div><ul><li>Disabling the account</li><li>Isolating any devices that the account logged in to</li><li>Remediating any malicious activities performed by the account</li></ul>"
             }
           }
         ]
@@ -1674,6 +1620,60 @@
     },
     {
       "type": "Microsoft.SecurityInsights/automationRules",
+      "name": "af5505e1-5413-4fd6-8055-436e2f484972",
+      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+      "apiVersion": "2022-12-01-preview",
+      "properties": {
+        "displayName": "AddTasks - Powershell Empire Cmdlets Executed in Command Line",
+        "order": 100,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','88ce926a-d7c0-4eba-862d-01b6ee494e09')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Review Alert Details",
+              "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Investigate",
+              "description": "<ul><li>Identify the entities involved in the incident/alert.</li><li>Use the following KQL as a template to investigate activities around the incident.</li></ul><pre  spellcheck=\"false\">SecurityEvent\n| where TimeGenerated between ((todatetime('yyyy-mm-ddT00:00:00.000Z')-10m)..( todatetime('yyyy-mm-ddT00:00:00.000Z')+10m))\n|where * has \"&lt;HostName&gt;\" and * has \"&lt;AccountName&gt;\" and * has \"&lt;Domain&gt;\"\n|where CommandLine != \"\" and (SubjectUserName !=\"\" or Account != \"\")\n|summarize count(), make_set(CommandLine) by SubjectUserName, Account, AccountType, Computer,&nbsp; EventSourceName, Activity, ParentProcessName\n</pre>"
+            }
+          },
+          {
+            "order": 3,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Closing or escalation",
+              "description": "<ul><li>If the activities are common, such as routine administrative activity, it can be closed as Benign Positive.</li><li>If the activities from the user(s) are suspicious (suspicious command line executions), escalate incident for further investigation.</li></ul>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.SecurityInsights/automationRules",
       "name": "3135e9fe-3aa7-43df-8b20-8f62e2b7ab8c",
       "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
       "apiVersion": "2022-12-01-preview",
@@ -1875,6 +1875,60 @@
             "actionConfiguration": {
               "title": "Remediate (if required)",
               "description": "<div>If malicious activity has occurred follow standard operating procedures for containment and remediation.</div><div><br></div><div>These would commonly involve steps such as:</div><ul><li>Reset affected credentials</li><li>Revoke active sessions</li><li>Other actions as required</li></ul>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.SecurityInsights/automationRules",
+      "name": "68517adc-5b54-4cb3-a104-22aee236f3df",
+      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+      "apiVersion": "2022-12-01-preview",
+      "properties": {
+        "displayName": "AddTasks - Detect CoreBackUp Deletion Activity from related Security Alerts",
+        "order": 100,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','1088ac2e-3910-4b44-be05-f808f9aa1a4c')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Investigate the surrounding alerts",
+              "description": "<div>Determine if the related alerts point to malicious activities such as ransomware.</div>"
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Confirm internally if the backups are to be deleted",
+              "description": "<div>Check with the team responsible for backups if this is part of normal business processes.</div>"
+            }
+          },
+          {
+            "order": 3,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Remediate (if necessary)",
+              "description": "<div>Remediation could include:</div><div><br></div><ul><li>Securing the backups</li><li>Disabling the account that is attempting to delete the backups</li><li>Further information regarding securing backups can be found here: https://www.cyber.gov.au/backups#accordion-2780</li></ul>"
             }
           }
         ]
@@ -2284,60 +2338,6 @@
     },
     {
       "type": "Microsoft.SecurityInsights/automationRules",
-      "name": "6c9fdffa-1834-4121-81fe-3c510abfd5f3",
-      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
-      "apiVersion": "2022-12-01-preview",
-      "properties": {
-        "displayName": "AddTasks - Potential beaconing activity (ASIM Network Session schema)",
-        "order": 100,
-        "triggeringLogic": {
-          "isEnabled": true,
-          "expirationTimeUtc": null,
-          "triggersOn": "Incidents",
-          "triggersWhen": "Created",
-          "conditions": [
-            {
-              "conditionType": "Property",
-              "conditionProperties": {
-                "propertyName": "IncidentRelatedAnalyticRuleIds",
-                "operator": "Contains",
-                "propertyValues": [
-                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','65305b9c-7fd2-400c-ad14-e4cf993efac5')]"
-                ]
-              }
-            }
-          ]
-        },
-        "actions": [
-          {
-            "order": 1,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": " Extract and investigate entities",
-              "description": "<div><strong>Double check the external entities via enrichment</strong></div><div><br></div><div>Confirm whether the IP (and port) appears malicious with tools such as:</div><ul><li><a href=\"https://www.abuseipdb.com/\" rel=\"noopener noreferrer\" target=\"_blank\">Abuse IP DB</a></li><li><a href=\"https://www.ip2location.com/demo\" rel=\"noopener noreferrer\" target=\"_blank\">IP2Location</a></li><li><a href=\"https://ipinfo.io/\" rel=\"noopener noreferrer\" target=\"_blank\">IP Info</a></li><li><a href=\"https://www.virustotal.com/gui/home/search\" rel=\"noopener noreferrer\" target=\"_blank\">VirusTotal</a></li></ul><div><br></div><div>Further, due to the ASIM rule, Microsoft Parsers will allow you to search using specific schemas (this rule uses the ASIM Network Session Schema): <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-schemas\" rel=\"noopener noreferrer\" target=\"_blank\">Advanced Security Information Model (ASIM) schemas | Microsoft Learn</a></div><div><br></div><div>Information on using ASIM parsers: <a href=\"https://learn.microsoft.com/en-us/azure/sentinel/normalization-about-parsers\" rel=\"noopener noreferrer\" target=\"_blank\">Use Advanced Security Information Model (ASIM) parsers | Microsoft Learn</a></div>"
-            }
-          },
-          {
-            "order": 2,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Review related network activity and assess need for remediation",
-              "description": "<div><strong>Review activity relating to the suspicious IP and port activity, this could include:</strong></div><ul><li>Sign-in activity</li><li>Device connections</li><li>Firewall logs</li></ul><div><br></div><div>To scope the recorded interactions involved with the external IP address you can use the \"search\" command in KQL:</div><pre  spellcheck=\"false\">search \"&lt;INSERT IP&gt;\"\n| summarize count() by $table\n</pre>"
-            }
-          },
-          {
-            "order": 3,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Remediation (if required)",
-              "description": "<div><strong>Follow remediation Standard Operative Procedures, actions may include:</strong></div><ul><li>Blocking/sink holing the IP/domain at the gateway/firewall level</li><li>Isolating and scanning device</li><li>Other actions as required</li></ul>"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.SecurityInsights/automationRules",
       "name": "014a00e9-8156-48e3-9385-18e79aee01d6",
       "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
       "apiVersion": "2023-03-01-preview",
@@ -2733,6 +2733,76 @@
             "actionConfiguration": {
               "title": "Review sign-in activity for IP",
               "description": "<div>Make note of the accounts with successful logins from the suspicious IP</div><div><br></div><div><strong>Possible KQL query</strong></div><pre  spellcheck=\"false\">imAuthentication\n| where TimeGenerated &gt; ago(3d) // Adjust lookback time as necessary\n| where IPAddress in (\"[IPAddress]\") // Comma seperated list of IPs\n//| where EventResult in (\"Success\") // Only show logins that suceeded\n| project TimeGenerated, TargetUsername, IPAddress, EventType, EventResult, EventResultDetails, LogonMethod, LogonTarget\n| summarize make_set(TargetUsername), make_set(EventResultDetails), count() by IPAddress, EventResult, LogonMethod\n</pre>"
+            }
+          },
+          {
+            "order": 4,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Determine if login activity is expected and approved",
+              "description": "<div>It is not recommended to contact the user directly to avoid a scenario of a threat actor with control of the account replying with incorrect information. A common method is to instead contact the user's manager.</div>"
+            }
+          },
+          {
+            "order": 5,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Remediate (if required)",
+              "description": "<div><strong>If there was unauthorised logins, possible actions may include:</strong></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review account activity across relevant services after the breach occurred.</li></ul>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.SecurityInsights/automationRules",
+      "name": "aa00dd71-2669-4007-9eb7-058aa890f2e0",
+      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+      "apiVersion": "2022-12-01-preview",
+      "properties": {
+        "displayName": "AddTasks - Sign-ins from IPs that attempt sign-ins to disabled accounts",
+        "order": 100,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','9e72da12-e155-44ba-acf4-69ba5966575c')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Extract IP from incident entities",
+              "description": "<div><br></div>"
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Enrich IP",
+              "description": "<div><strong>The enrichment services listed are only suggestions, there are many other potential sources. The suggested sources are not required to be used.</strong></div><ul><li>Is this IP known to your organisation?</li><li>Is the IP from a location you would expect to see from your users?</li><li>Do threat intelligence sources list the IP as known to be malicious? (suggested sources: AbuseIPDB, VirusTotal)</li></ul>"
+            }
+          },
+          {
+            "order": 3,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Review sign-in activity for IP",
+              "description": "<div>Make note of the accounts with successful logins from the suspicious IP</div><div><br></div><div><strong>Possible KQL query</strong></div><div><br></div><div><br></div><pre  spellcheck=\"false\">SigninLogs&nbsp;//Can also check AADNonInteractiveUserSignInLogs\n| where TimeGenerated &gt; ago(1d) // Change lookback time as required&nbsp;&nbsp;\n| where IPAddress&nbsp; in (\"[IP]\") // For use when filtering by users (comma seperated list)\n| where ResultType !in (\"50126\", \"50053\", \"530031\") // Remove login attempts with incorrect credentials or auto blocked IPs\n| extend AuthStep_1 = tostring(parse_json(AuthenticationDetails)[0].authenticationMethod) // Used to discover password authentication attempts\n| extend AuthSuccess_1 = tostring(parse_json(AuthenticationDetails)[0].succeeded) // Used to determine if password authentication succeeded\n| where (AuthStep_1&nbsp; in (\"Password\") and AuthSuccess_1 in (\"true\")) or ResultType in (\"0\", \"53003\", \"50076\") // Only show logins that succeeded or had correct credentials&nbsp;\n| summarize count() by TimeGenerated, UserPrincipalName, IPAddress, Location, ResultType, ResultDescription\n| sort by TimeGenerated desc\n</pre>"
             }
           },
           {
@@ -3350,6 +3420,60 @@
     },
     {
       "type": "Microsoft.SecurityInsights/automationRules",
+      "name": "2b71dcad-196f-4d50-a7f3-9b43435fc4b3",
+      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
+      "apiVersion": "2022-12-01-preview",
+      "properties": {
+        "displayName": "AddTasks - Midnight Blizzard - suspicious rundll32.exe execution of vbscript (Normalized Process Events)",
+        "order": 100,
+        "triggeringLogic": {
+          "isEnabled": true,
+          "expirationTimeUtc": null,
+          "triggersOn": "Incidents",
+          "triggersWhen": "Created",
+          "conditions": [
+            {
+              "conditionType": "Property",
+              "conditionProperties": {
+                "propertyName": "IncidentRelatedAnalyticRuleIds",
+                "operator": "Contains",
+                "propertyValues": [
+                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','e1ab8b56-fd2a-4af7-b0a7-dee14b7948c4')]"
+                ]
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "order": 1,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Review alert details",
+              "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
+            }
+          },
+          {
+            "order": 2,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Investigate",
+              "description": "<ul><li>Extract the entity details given in the alert.</li><li>Perform a search for the identified entities within Sentinel using the following KQL as a template.</li></ul><div><br></div><div><br></div><div><br></div><pre  spellcheck=\"false\">Search *\n|where * has \u201c&lt;entity&gt;\u201d\n|summarize count() by $table\n</pre>"
+            }
+          },
+          {
+            "order": 3,
+            "actionType": "AddIncidentTask",
+            "actionConfiguration": {
+              "title": "Close or Escalate",
+              "description": "<div>Follow standard operating procedures for triaging suspicious process executions, which may include:</div><ul><li>Identifying if the execution of vbscripts is common or unexpected expected activity.</li><li>Confirming (with the relevant team(s)) if the activity is approved, or not.</li></ul>"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.SecurityInsights/automationRules",
       "name": "a5bb57c1-eade-406a-993b-af8a854883e7",
       "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
       "apiVersion": "2022-12-01-preview",
@@ -3815,60 +3939,6 @@
             "actionConfiguration": {
               "title": "Remediate (if required)",
               "description": "<div><strong>If there was unauthorised logins or rule creation, possible actions may include:</strong></div><div><br></div><div><br></div><ul><li>Reset user credentials.</li><li>Revoke active sessions.</li><li>Review inbox rules, removing rules where necessary.</li><li>Review account activity across relevant services after the breach occurred.</li></ul>"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.SecurityInsights/automationRules",
-      "name": "0ddf8006-372a-4c33-9b88-6cf82bc68aea",
-      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
-      "apiVersion": "2022-12-01-preview",
-      "properties": {
-        "displayName": "AddTasks - Rare client observed with high reverse DNS lookup count",
-        "order": 100,
-        "triggeringLogic": {
-          "isEnabled": true,
-          "expirationTimeUtc": null,
-          "triggersOn": "Incidents",
-          "triggersWhen": "Created",
-          "conditions": [
-            {
-              "conditionType": "Property",
-              "conditionProperties": {
-                "propertyName": "IncidentRelatedAnalyticRuleIds",
-                "operator": "Contains",
-                "propertyValues": [
-                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','3f772d37-ddf3-4058-b63a-e961938644c4')]"
-                ]
-              }
-            }
-          ]
-        },
-        "actions": [
-          {
-            "order": 1,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Review alert details",
-              "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
-            }
-          },
-          {
-            "order": 2,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Investigate",
-              "description": "<ul><li>Check the domain names and the IP address(s) the query or the lookup was performed on.</li></ul><div><br></div><div><br></div><div><br></div><pre  spellcheck=\"false\">DnsEvents\n|where TimeGenerated between ((todatetime('yyyy-mm-ddT00:00:00.000Z')-5m)..(todatetime(' yyyy-mm-ddT00:00:00.000Z')+5m))\n| where * has \"0.0.0.0\"\n|summarize count(), make_set(IPAddresses) by ClientIP, Name, Computer, Type, QueryType, ResultCode\n</pre>"
-            }
-          },
-          {
-            "order": 3,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Close or Escalate",
-              "description": "<ul><li>If the device(s) are domain controllers, then the querying of domains could be usual activity and should be confirmed.</li><li>If the device(s) is not known to perform DNS querying, then the incident should be escalated for further investigation.</li></ul>"
             }
           }
         ]
@@ -4925,60 +4995,6 @@
             "actionConfiguration": {
               "title": "Remediate (if required)",
               "description": "<div><strong>Depending on your environment, some remediation actions may include:</strong></div><ul><li>Run antivirus scan</li><li>Review responsible account's recent sign-ins and activities</li><li>Isolate device</li><li>Stop and quarantine the responsible file</li><li>Search for similar behaviour in other devices across your organisation</li></ul>"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.SecurityInsights/automationRules",
-      "name": "af5505e1-5413-4fd6-8055-436e2f484972",
-      "scope": "[concat('Microsoft.OperationalInsights/workspaces/', parameters('existingWorkspaceName'))]",
-      "apiVersion": "2022-12-01-preview",
-      "properties": {
-        "displayName": "AddTasks - Powershell Empire cmdlets seen in command line",
-        "order": 100,
-        "triggeringLogic": {
-          "isEnabled": true,
-          "expirationTimeUtc": null,
-          "triggersOn": "Incidents",
-          "triggersWhen": "Created",
-          "conditions": [
-            {
-              "conditionType": "Property",
-              "conditionProperties": {
-                "propertyName": "IncidentRelatedAnalyticRuleIds",
-                "operator": "Contains",
-                "propertyValues": [
-                  "[resourceId('Microsoft.OperationalInsights/workspaces/providers/alertRules',parameters('existingWorkspaceName'),'Microsoft.SecurityInsights','88ce926a-d7c0-4eba-862d-01b6ee494e09')]"
-                ]
-              }
-            }
-          ]
-        },
-        "actions": [
-          {
-            "order": 1,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Review Alert Details",
-              "description": "<div>Access the alert in KQL by selecting the 'Alerts' under the 'Evidence' heading.</div><div><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAcCAYAAACdz7SqAAAAAXNSR0IArs4c6QAAAIRlWElmTU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAB2gAwAEAAAAAQAAABwAAAAAECFS4gAAAAlwSFlzAAALEwAACxMBAJqcGAAAA0lJREFUSA3Fl09IFFEcx78z466OrqVpmakZiSmCeEiJoJCiLumtgkqMKCro4qHy4C0jiC7RRUhC3EOYHfpzCIJAJYTQQ4Ypin+pbNf/Ops6s7vzp/dm3cHdmV13Se3tzu7v/d7v/T7v93tv33vLaIv9Gtyd2MmSgJluoKduJ5lgd5S2DkswQZP2EZVmUv+bggGkWcNFKJQhgV+eMRq3VGghYPKmJWp6h2a94BoGkfFwGH0uMdBjCz5DI113ePrFJBSfDRk2HrVFuVA1DY0fViHIixhaWoG7oSgiemBgACUlJWDZyPFYtqQyyTjsSIXDzqEwi8PFozxS7Qk4mOwAq9ggSIoJOjo6itLSUv3xer2m9o0KS6gkK/D4ZKyQB4wKRyLwh8genx9eRQXDrE/OBk+CIMDpdG7QRBYt00uBKsfqa1hSOKjkRaF0IfgUDSl2M7S8vDwyJazFEiqQiDSOg0Lm8vu0hukVGQKBUtSa4gdnEWmY36hVy/Q2n9+PsWVRj463A9m7WT3dc6IP767mRXUYS6NlpCcOpeBscSI6RiR0TvjRMRFwdbcyHdXFqbH4jWpjGSnt0XYpD/dPpWPZSxaQX0Y9kesrM6M6o40amRKe56PaWUYa7HHvZCaulKUhy8GBY82LJ2gX73dUKHV2YNemJvEyo2+DcXuLsUPEOa1snjRc3H7rMmQroXdKjOtcsoT2/BKxJKp43rOkMyQ5cNS5PTKefJ4nO5WKsQUfOQQktPd7cOzZOF72CaB2j7vmMTLvsxqbobOE1rRPob+uAM6vy4YhFSqaJnDuiAO3SOSd46u4+caFggwbWBuDwkw79jQOo6rYAdGvhvQLr1hCPZKK6tYf+OaW9G2PdlJUDSp5al//hkuQ9XQ+OLMX5Tk8WLJDVeTyeF+bh6rWn1jbBGpamo+6FvDpRj7KspPQS9Jc82oKvI3VfzIiSV/LhRzQc3ZuVYaNC/yM8tJs6J+WMEj0H6/n42n3Ao4fTA4P0Kgz2lCThi93Agp6c7hmPrYMayLQ1NFBhBc66/re7NeQTNJtKrHeHEwdicIKSO2CGEtgmKPQ9GpkAbRlEZNtuJgFR0W8h0LpiDbc2mh1O4p5craDEuaT+R9/K/4C2+ImlxxiJc4AAAAASUVORK5CYII=\"></div><div>An instance of the Log Analytics workspace will appear with a query to show the alert.</div>"
-            }
-          },
-          {
-            "order": 2,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Investigate",
-              "description": "<ul><li>Identify the entities involved in the incident/alert.</li><li>Use the following KQL as a template to investigate activities around the incident.</li></ul><pre  spellcheck=\"false\">SecurityEvent\n| where TimeGenerated between ((todatetime('yyyy-mm-ddT00:00:00.000Z')-10m)..( todatetime('yyyy-mm-ddT00:00:00.000Z')+10m))\n|where * has \"&lt;HostName&gt;\" and * has \"&lt;AccountName&gt;\" and * has \"&lt;Domain&gt;\"\n|where CommandLine != \"\" and (SubjectUserName !=\"\" or Account != \"\")\n|summarize count(), make_set(CommandLine) by SubjectUserName, Account, AccountType, Computer,&nbsp; EventSourceName, Activity, ParentProcessName\n</pre>"
-            }
-          },
-          {
-            "order": 3,
-            "actionType": "AddIncidentTask",
-            "actionConfiguration": {
-              "title": "Closing or escalation",
-              "description": "<ul><li>If the activities are common, such as routine administrative activity, it can be closed as Benign Positive.</li><li>If the activities from the user(s) are suspicious (suspicious command line executions), escalate incident for further investigation.</li></ul>"
             }
           }
         ]
