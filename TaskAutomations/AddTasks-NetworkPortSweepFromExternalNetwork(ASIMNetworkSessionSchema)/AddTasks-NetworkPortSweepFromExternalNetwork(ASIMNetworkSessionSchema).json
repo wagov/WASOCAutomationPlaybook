@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks - Potential beaconing activity (ASIM Network Session schema)",
+        "automationRuleName": "AddTasks - Network Port Sweep from External Network (ASIM Network Session schema)",
         "automationRuleGuid": "6c9fdffa-1834-4121-81fe-3c510abfd5f3",
         "existingRuleId": "65305b9c-7fd2-400c-ad14-e4cf993efac5"
     },

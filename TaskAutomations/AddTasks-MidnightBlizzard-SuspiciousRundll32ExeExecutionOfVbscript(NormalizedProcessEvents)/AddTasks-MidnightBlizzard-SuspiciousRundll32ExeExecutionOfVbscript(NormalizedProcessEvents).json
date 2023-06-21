@@ -10,7 +10,7 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks - NOBELIUM - suspicious rundll32.exe execution of vbscript (Normalized Process Events)",
+        "automationRuleName": "AddTasks - Midnight Blizzard - suspicious rundll32.exe execution of vbscript (Normalized Process Events)",
         "automationRuleGuid":  "2b71dcad-196f-4d50-a7f3-9b43435fc4b3",
         "existingRuleId": "e1ab8b56-fd2a-4af7-b0a7-dee14b7948c4"
     },

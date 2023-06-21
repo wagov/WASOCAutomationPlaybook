@@ -10,9 +10,9 @@
         }
     },
     "variables": {
-        "automationRuleName": "AddTasks - MSHTML vulnerability CVE-2021-40444 attack",
-        "automationRuleGuid": "fe16cdb0-bb98-4939-accb-e8eef8fcb9bd",
-        "existingRuleId": "8049d403-5f19-4e82-99da-227ddf957191"
+        "automationRuleName": "AddTasks - Detect CoreBackUp Deletion Activity from related Security Alerts",
+        "automationRuleGuid": "68517adc-5b54-4cb3-a104-22aee236f3df",
+        "existingRuleId": "1088ac2e-3910-4b44-be05-f808f9aa1a4c"
     },
     "resources": [
         {
@@ -46,16 +46,24 @@
                         "order": 1,
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
-                          "title": "Determine if the file is causing malicious behaviour",
-                          "description": "<div>Investigate for:</div><div><br></div><div><br></div><div><br></div><div><br></div><ul><li>Suspicious behaviour by Office applications</li><li>Suspicious use of the Control Panel</li></ul>"
+                          "title": "Investigate the surrounding alerts",
+                          "description": "<div>Determine if the related alerts point to malicious activities such as ransomware.</div>"
                         }
                       },
                       {
                         "order": 2,
                         "actionType": "AddIncidentTask",
                         "actionConfiguration": {
+                          "title": "Confirm internally if the backups are to be deleted",
+                          "description": "<div>Check with the team responsible for backups if this is part of normal business processes.</div>"
+                        }
+                      },
+                      {
+                        "order": 3,
+                        "actionType": "AddIncidentTask",
+                        "actionConfiguration": {
                           "title": "Remediate (if necessary)",
-                          "description": "<div>Remediation could include:</div><ul><li>Isolating the device</li><li>Removing malicious files</li><li>Ensuring that the threat actor has not moved laterally</li><li>Scanning the environment for the vulnerability</li><li>Further information (Including KQL to check for instances) can be found here: https://www.microsoft.com/en-us/security/blog/2021/09/15/analyzing-attacks-that-exploit-the-mshtml-cve-2021-40444-vulnerability/</li></ul>"
+                          "description": "<div>Remediation could include:</div><div><br></div><ul><li>Securing the backups</li><li>Disabling the account that is attempting to delete the backups</li><li>Further information regarding securing backups can be found here: https://www.cyber.gov.au/backups#accordion-2780</li></ul>"
                         }
                       }
                 ]
